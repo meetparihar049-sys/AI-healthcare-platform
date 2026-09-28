@@ -138,7 +138,7 @@ export default function FacilityPage({ onAskAboutFacility }) {
                 <div>
                   <strong style={{ fontSize: "0.75rem", color: "#64748b" }}>Specializations:</strong>
                   <div style={{ display: "flex", flexWrap: "wrap", gap: "0.25rem", marginTop: "0.25rem" }}>
-                    {f.specializations.map((spec, i) => (
+                    {(f.specializations || f.specialties || []).map((spec, i) => (
                       <span key={i} style={{ fontSize: "0.75rem", background: "#f1f5f9", padding: "0.15rem 0.4rem", borderRadius: "4px" }}>
                         {spec}
                       </span>

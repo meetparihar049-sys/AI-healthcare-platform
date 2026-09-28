@@ -98,7 +98,7 @@ export default function SchemePage({ onAskAboutScheme }) {
                 <div style={{ marginBottom: "0.75rem" }}>
                   <strong style={{ fontSize: "0.8rem", color: "#475569" }}>Who is Eligible:</strong>
                   <ul style={{ paddingLeft: "1.2rem", fontSize: "0.8rem", marginTop: "0.25rem", color: "#334155" }}>
-                    {s.eligibility_criteria.map((c, i) => (
+                    {(s.eligibility_criteria || []).map((c, i) => (
                       <li key={i}>{c}</li>
                     ))}
                   </ul>

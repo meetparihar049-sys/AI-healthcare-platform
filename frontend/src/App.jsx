@@ -9,6 +9,7 @@ import FacilityPage from "./pages/FacilityPage";
 import SchemePage from "./pages/SchemePage";
 import ReportPage from "./pages/ReportPage";
 import WellnessPage from "./pages/WellnessPage";
+import ErrorBoundary from "./components/ErrorBoundary";
 
 export default function App() {
   const [activeTab, setActiveTab] = useState("chat");
@@ -72,43 +73,45 @@ export default function App() {
       <DisclaimerBanner />
 
       <main className="main-content">
-        {activeTab === "chat" && (
-          <ChatPage
-            user={user}
-            initialQuery={initialChatQuery}
-            onClearInitialQuery={() => setInitialChatQuery("")}
-            onNavigateTab={setActiveTab}
-            onTriggerEmergency={handleTriggerEmergency}
-          />
-        )}
+        <ErrorBoundary>
+          {activeTab === "chat" && (
+            <ChatPage
+              user={user}
+              initialQuery={initialChatQuery}
+              onClearInitialQuery={() => setInitialChatQuery("")}
+              onNavigateTab={setActiveTab}
+              onTriggerEmergency={handleTriggerEmergency}
+            />
+          )}
 
-        {activeTab === "facilities" && (
-          <FacilityPage
-            onAskAboutFacility={(facName) =>
-              handleSwitchToChatWithQuery(`Tell me about ${facName} and what conditions they treat best.`)
-            }
-          />
-        )}
+          {activeTab === "facilities" && (
+            <FacilityPage
+              onAskAboutFacility={(facName) =>
+                handleSwitchToChatWithQuery(`Tell me about ${facName} and what conditions they treat best.`)
+              }
+            />
+          )}
 
-        {activeTab === "schemes" && (
-          <SchemePage
-            onAskAboutScheme={(schemeName) =>
-              handleSwitchToChatWithQuery(`What are the exact eligibility documents and application steps for ${schemeName}?`)
-            }
-          />
-        )}
+          {activeTab === "schemes" && (
+            <SchemePage
+              onAskAboutScheme={(schemeName) =>
+                handleSwitchToChatWithQuery(`What are the exact eligibility documents and application steps for ${schemeName}?`)
+              }
+            />
+          )}
 
-        {activeTab === "reports" && (
-          <ReportPage
-            onAskInChat={(query) => handleSwitchToChatWithQuery(query)}
-          />
-        )}
+          {activeTab === "reports" && (
+            <ReportPage
+              onAskInChat={(query) => handleSwitchToChatWithQuery(query)}
+            />
+          )}
 
-        {activeTab === "wellness" && (
-          <WellnessPage
-            onAskTopic={(prompt) => handleSwitchToChatWithQuery(prompt)}
-          />
-        )}
+          {activeTab === "wellness" && (
+            <WellnessPage
+              onAskTopic={(prompt) => handleSwitchToChatWithQuery(prompt)}
+            />
+          )}
+        </ErrorBoundary>
       </main>
 
       <Footer

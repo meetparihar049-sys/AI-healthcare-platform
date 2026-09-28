@@ -76,7 +76,9 @@ const FALLBACK_FACILITIES = [
     emergency_available: true,
     address: "Civil Lines, Near Metro Station, Central District",
     phone: "011-23860000",
-    specialties: ["Emergency", "Trauma", "Cardiology", "Neurology", "Pediatrics"],
+    specializations: ["Emergency Medicine", "General Surgery", "Cardiology", "Pediatrics", "Trauma Care", "Obstetrics"],
+    operating_hours: "24/7",
+    notes: "State-run hospital. Free consultations and subsidized diagnostics for all patients.",
     schemes_accepted: ["Ayushman Bharat PM-JAY", "JSSK"],
   },
   {
@@ -87,7 +89,9 @@ const FALLBACK_FACILITIES = [
     emergency_available: false,
     address: "Block B, Community Welfare Complex, Sector 4",
     phone: "011-26781200",
-    specialties: ["General Medicine", "Maternal Care", "Immunization", "Pediatrics"],
+    specializations: ["General Medicine", "Maternal Care", "Immunization", "Pediatrics"],
+    operating_hours: "8:00 AM - 4:00 PM (Mon-Sat)",
+    notes: "Walk-in consultations, child vaccinations, and maternal wellness checks.",
     schemes_accepted: ["JSSK", "RBSK", "Free OPD"],
   },
   {
@@ -98,7 +102,9 @@ const FALLBACK_FACILITIES = [
     emergency_available: false,
     address: "Shop 12, Main Market Road, Near District Hospital",
     phone: "1800-180-8080",
-    specialties: ["Generic Medicines", "Surgical Supplies", "Affordable Prescriptions"],
+    specializations: ["Generic Medicines", "Surgical Supplies", "Affordable Prescriptions"],
+    operating_hours: "9:00 AM - 9:00 PM Daily",
+    notes: "50% to 90% savings on generic cardiovascular, diabetes, and antibiotic medications.",
     schemes_accepted: ["PMBJP"],
   },
   {
@@ -109,7 +115,9 @@ const FALLBACK_FACILITIES = [
     emergency_available: true,
     address: "45 Healthcare Boulevard, Medical Enclave",
     phone: "011-45990000",
-    specialties: ["Cardiology", "Cardiac Surgery", "ICU", "Emergency"],
+    specializations: ["Cardiology", "Cardiac Surgery", "Critical Care", "Emergency"],
+    operating_hours: "24/7 Emergency & ICU",
+    notes: "Tertiary private cardiac center. Accepts Ayushman Bharat PM-JAY for cashless cardiac stenting.",
     schemes_accepted: ["Ayushman Bharat PM-JAY", "Private Insurance"],
   },
 ];
@@ -158,38 +166,47 @@ const FALLBACK_SCHEMES = [
 
 const FALLBACK_WELLNESS = [
   {
-    id: "cardio",
-    title: "Cardiovascular Health & Blood Pressure Control",
+    id: "well-001",
+    title: "Cardiovascular Health & Blood Pressure",
+    domain: "heart_health",
     icon: "heart",
-    summary: "Evidence-based protocols for maintaining healthy arteries, optimal blood pressure, and resting heart rate.",
-    key_points: [
-      "Target blood pressure under 120/80 mmHg; check monthly if above 40",
-      "Engage in 150 minutes of moderate aerobic exercise weekly (brisk walking, cycling)",
-      "Limit sodium intake to under 2,000 mg per day and increase potassium-rich leafy greens",
+    summary: "Maintaining healthy vascular tone, arterial elasticity, and optimal blood pressure through daily lifestyle adjustments.",
+    tips: [
+      "Limit dietary sodium to under 2,000 mg (about 1 teaspoon of table salt) daily.",
+      "Incorporate 30 minutes of moderate cardiovascular aerobic activity 5 days a week.",
+      "Consume potassium-rich foods (bananas, spinach, beans, sweet potatoes) to counter sodium."
     ],
+    suggested_chat_prompt: "How can I naturally lower my blood pressure and what foods should I avoid?",
+    screening_guidance: "Adults 18+ should check blood pressure at least once a year; every 6 months if borderline."
   },
   {
-    id: "diabetes",
-    title: "Metabolic Wellness & Prediabetes Prevention",
+    id: "well-002",
+    title: "Type 2 Diabetes Prevention & Glucose Control",
+    domain: "metabolic_health",
     icon: "activity",
-    summary: "Preventing insulin resistance and type-2 diabetes through lifestyle modifications and glycemic control.",
-    key_points: [
-      "Keep Fasting Blood Sugar under 100 mg/dL and HbA1c below 5.7%",
-      "Replace refined carbohydrates and sugary sodas with whole grains, legumes, and lean protein",
-      "Take a 10-minute walk immediately following heavy meals to blunt postprandial glucose spikes",
+    summary: "Understanding insulin sensitivity, glycemic index of foods, and proactive prediabetes intervention.",
+    tips: [
+      "Replace refined carbohydrates and sugary sodas with whole grains and leafy vegetables.",
+      "Take a brisk 10-minute walk immediately after major meals to blunt postprandial glucose spikes.",
+      "Target a modest 5% to 7% reduction in body weight to cut diabetes risk by up to 58%."
     ],
+    suggested_chat_prompt: "What are the early warning signs of insulin resistance and prediabetes?",
+    screening_guidance: "Fasting blood sugar or HbA1c test every 3 years starting at age 35, or earlier with family history."
   },
   {
-    id: "mental",
-    title: "Stress Resilience & Nervous System Care",
+    id: "well-003",
+    title: "Mental Wellness & Stress Resilience",
+    domain: "mental_health",
     icon: "smile",
-    summary: "Clinically proven relaxation techniques to lower cortisol and protect cognitive wellness.",
-    key_points: [
-      "Practice 5 minutes of 4-7-8 physiological sigh breathing during acute stress",
-      "Prioritize 7 to 9 hours of uninterrupted sleep in a dark, cool room",
-      "Maintain active social connections and take digital breaks before bedtime",
+    summary: "Techniques for managing chronic cortisol elevation, anxiety reduction, and sleep-mood stabilization.",
+    tips: [
+      "Practice box breathing (inhale 4s, hold 4s, exhale 4s, hold 4s) during moments of acute anxiety.",
+      "Set healthy digital boundaries: disconnect from work emails and notifications at least 60 minutes before bed.",
+      "Engage in meaningful social connection or talk therapy if feelings of overwhelm persist."
     ],
-  },
+    suggested_chat_prompt: "What are evidence-based techniques to reduce daily stress and anxiety?",
+    screening_guidance: "Annual PHQ-9 depression and GAD-7 anxiety self-screening during wellness checkups."
+  }
 ];
 
 function getFallbackClinicalResponse(userQuery) {
@@ -467,16 +484,27 @@ export const api = {
     } catch {
       // Mock report analysis for demo when backend is offline
       return {
+        document_type: "Comprehensive Metabolic & Lipid Panel",
+        filename: file?.name || "sample_blood_test.pdf",
         summary: "Comprehensive Metabolic & Lipid Screen indicates elevated fasting blood sugar (136 mg/dL) and elevated HbA1c (6.7%), suggesting potential prediabetes or diabetes. Total cholesterol and LDL are also mildly elevated.",
-        abnormal_values: [
-          { test: "Fasting Blood Sugar", value: "136 mg/dL", normal_range: "70 - 99 mg/dL", severity: "High" },
-          { test: "HbA1c", value: "6.7%", normal_range: "< 5.7%", severity: "Elevated" },
-          { test: "Total Cholesterol", value: "228 mg/dL", normal_range: "< 200 mg/dL", severity: "High" },
-          { test: "LDL Cholesterol", value: "148 mg/dL", normal_range: "< 100 mg/dL", severity: "High" },
+        abnormal_findings: [
+          "Fasting Blood Sugar: 136 mg/dL (Normal: 70 - 99 mg/dL) — HIGH",
+          "HbA1c (Glycated Hemoglobin): 6.7% (Normal: < 5.7%) — ELEVATED",
+          "Total Cholesterol: 228 mg/dL (Normal: < 200 mg/dL) — HIGH",
+          "LDL (Bad) Cholesterol: 148 mg/dL (Normal: < 100 mg/dL) — HIGH",
+          "Triglycerides: 190 mg/dL (Normal: < 150 mg/dL) — ELEVATED",
         ],
-        questions_for_doctor: [
-          "Do these HbA1c and fasting blood glucose numbers warrant a formal oral glucose tolerance test?",
-          "Should we consider dietary lifestyle intervention or medication for glycemic and lipid control?",
+        normal_findings: [
+          "Serum Creatinine: 0.92 mg/dL (Normal Kidney Function)",
+          "Blood Urea Nitrogen (BUN): 16 mg/dL (Within Standard Range)",
+          "HDL (Good) Cholesterol: 42 mg/dL (Acceptable Range)",
+        ],
+        plain_language_explanation:
+          "Your lab work indicates that your blood sugar levels and average 3-month glucose (HbA1c of 6.7%) are higher than normal, pointing toward prediabetes or early diabetes. Additionally, your LDL 'bad' cholesterol and triglycerides are mildly elevated, which can impact cardiovascular health over time. Your kidney markers (creatinine and BUN) are in a healthy, normal range.",
+        recommended_doctor_questions: [
+          "Do these HbA1c and fasting blood glucose numbers warrant medication or lifestyle adjustments?",
+          "Should we consider dietary intervention for lipid control?",
+          "How frequently should I repeat this metabolic panel to track progress?",
         ],
         urgency_level: 2,
       };

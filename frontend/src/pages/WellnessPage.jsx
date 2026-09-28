@@ -72,7 +72,7 @@ export default function WellnessPage({ onAskTopic }) {
                   <div>
                     <h3 className="card-title" style={{ fontSize: "1rem" }}>{t.title}</h3>
                     <span className="badge badge-cost" style={{ fontSize: "0.7rem" }}>
-                      {t.domain.replace("_", " ").toUpperCase()}
+                      {(t.domain || "general").replace("_", " ").toUpperCase()}
                     </span>
                   </div>
                 </div>
@@ -86,7 +86,7 @@ export default function WellnessPage({ onAskTopic }) {
                 <div style={{ marginBottom: "0.75rem" }}>
                   <strong style={{ fontSize: "0.8rem", color: "var(--secondary)" }}>Actionable Tips:</strong>
                   <ul style={{ paddingLeft: "1.2rem", fontSize: "0.8rem", marginTop: "0.25rem", color: "#475569" }}>
-                    {t.tips.map((tip, i) => (
+                    {(t.tips || t.key_points || []).map((tip, i) => (
                       <li key={i} style={{ marginBottom: "0.25rem" }}>{tip}</li>
                     ))}
                   </ul>

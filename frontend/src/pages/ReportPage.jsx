@@ -154,7 +154,7 @@ Hemoglobin                 14.5         g/dL      13.5 - 17.5       NORMAL
                 ⚠️ Noteworthy / Flagged Markers
               </h4>
               <ul style={{ paddingLeft: "1.25rem", fontSize: "0.85rem", color: "#78350f" }}>
-                {analysis.abnormal_findings.map((f, i) => (
+                {(analysis.abnormal_findings || []).map((f, i) => (
                   <li key={i} style={{ marginBottom: "0.4rem" }}>{f}</li>
                 ))}
               </ul>
@@ -166,7 +166,7 @@ Hemoglobin                 14.5         g/dL      13.5 - 17.5       NORMAL
                 ✅ Standard / Normal Markers
               </h4>
               <ul style={{ paddingLeft: "1.25rem", fontSize: "0.85rem", color: "#14532d" }}>
-                {analysis.normal_findings.map((f, i) => (
+                {(analysis.normal_findings || []).map((f, i) => (
                   <li key={i} style={{ marginBottom: "0.4rem" }}>{f}</li>
                 ))}
               </ul>
@@ -175,21 +175,21 @@ Hemoglobin                 14.5         g/dL      13.5 - 17.5       NORMAL
 
           {/* Plain Language Translation */}
           <div style={{ background: "white", padding: "1.5rem", borderRadius: "12px", border: "1px solid var(--border)" }}>
-            <h4 style={{ fontSize: "1.05rem", fontWeight: 700, color: "#0f172a", marginBottom: "0.75rem" }}>
+            <h4 style={{ fontSize: "1.05rem", fontWeight: 700, color: "var(--cs-heading)", marginBottom: "0.75rem" }}>
               💡 Plain-Language Health Translation
             </h4>
-            <div style={{ fontSize: "0.9rem", lineHeight: 1.7, color: "#334155", whiteSpace: "pre-wrap" }}>
-              {analysis.plain_language_explanation}
+            <div style={{ fontSize: "0.9rem", lineHeight: 1.7, color: "var(--cs-body)", whiteSpace: "pre-wrap" }}>
+              {analysis.plain_language_explanation || analysis.summary || "Report reviewed."}
             </div>
           </div>
 
           {/* Doctor Questions Checklist */}
-          <div style={{ background: "#f8fafc", padding: "1.25rem", borderRadius: "12px", border: "1px solid var(--border)" }}>
-            <h4 style={{ fontSize: "0.95rem", fontWeight: 700, color: "#0f172a", marginBottom: "0.75rem" }}>
+          <div style={{ background: "var(--bg-card-subtle)", padding: "1.25rem", borderRadius: "12px", border: "1px solid var(--border)" }}>
+            <h4 style={{ fontSize: "0.95rem", fontWeight: 700, color: "var(--cs-heading)", marginBottom: "0.75rem" }}>
               🩺 Questions to Ask Your Physician:
             </h4>
-            <ul style={{ paddingLeft: "1.25rem", fontSize: "0.85rem", color: "#475569" }}>
-              {analysis.recommended_doctor_questions.map((q, i) => (
+            <ul style={{ paddingLeft: "1.25rem", fontSize: "0.85rem", color: "var(--cs-body)" }}>
+              {(analysis.recommended_doctor_questions || []).map((q, i) => (
                 <li key={i} style={{ marginBottom: "0.4rem" }}>
                   "{q}"
                 </li>
