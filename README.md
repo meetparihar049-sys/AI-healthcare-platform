@@ -2,23 +2,7 @@
 
 An enterprise-ready, safety-first full-stack healthcare awareness and access platform. CarePulse empowers individuals with natural language AI health guidance, deterministic emergency triage, verified facility discovery, government welfare scheme recommendations, automated plain-language medical report translation, and evidence-based preventive health education.
 
----
 
-## 🛠️ Errors Diagnosed & Corrected in this Repository
-
-Prior to this update, this repository contained only a blank README and an unstarted planning specification (`healthcare-platform-plan.md`) with critical architectural, security, and medical safety flaws. The following issues were diagnosed and corrected:
-
-| Error Category | Issue in Original Repository / Plan | Correction Implemented |
-| :--- | :--- | :--- |
-| **Missing Implementation** | The repository had 0 lines of code; all 14 sub-tasks were pending with no runnable services or files. | Implemented the complete, working full-stack platform across backend (FastAPI), frontend (React), and database services. |
-| **System Dependency Crash** | Sub-Tasks 1 & 8 specified installing `poppler-utils` in Docker, but **omitted `tesseract-ocr` and `tesseract-ocr-eng`**, which would cause `pytesseract.TesseractNotFoundError` on runtime report uploads. | Updated `Dockerfile` and setup instructions to install both `tesseract-ocr` and `poppler-utils`. |
-| **Security & Library Deprecation** | Specified `passlib[bcrypt]`, which is abandoned since 2020 and throws `TypeError: error reading bcrypt version` in Python 3.12+ with modern `bcrypt >= 4.1.0`. | Replaced with direct `bcrypt` password hashing and secure `PyJWT` tokens. |
-| **Clinical Safety & Triage Hazard** | 1. Artificially constrained LLM symptom responses to Urgency Levels 1–3, assuming keyword matching caught 100% of emergencies.<br>2. Blocked queries < 10 words from emergency triage. | 1. Upgraded Safety Triage to a multi-tiered safety system: regex/fuzzy emergency keywords + immediate escalation path.<br>2. Allowed LLM to output Urgency Level 4 (Emergency) as a secondary safety net.<br>3. Urgent descriptions bypass word-count gates immediately to triage.<br>4. Integrated clickable emergency hotlines (112, 911, 14416). |
-| **Inefficient PDF Processing** | Forced rasterization of all digital lab PDFs to images before OCR, causing 10x slower processing and OCR misreading of numeric decimals. | Implemented dual-strategy text extractor: direct digital text extraction (`pypdf`) with graceful OCR fallback for scanned reports. |
-| **Dev Environment Rigidity** | Rigid PostgreSQL dependency prevented instant local testing. | Added flexible database engine supporting SQLite (`aiosqlite`) for zero-config local run, with PostgreSQL (`asyncpg`) for production. |
-| **Missing AI Fallback** | Lack of an OpenAI API key would crash the entire platform with unhandled 500 errors. | Built a resilient Clinical AI client with intelligent mock fallback responses, enabling full offline functionality and automated test execution. |
-
----
 
 ## 🏗️ Architecture & Technology Stack
 
