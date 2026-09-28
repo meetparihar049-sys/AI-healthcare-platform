@@ -26,7 +26,7 @@ Prior to this update, this repository contained only a blank README and an unsta
   - RESTful architecture with `/api/v1` prefix
   - SQLAlchemy 2.0 (Async Engine) with SQLite / PostgreSQL support
   - Deterministic safety triage regex engine
-  - OpenAI GPT-4o client with intelligent clinical fallback generator
+  - **Google Gemini API** (`gemini-1.5-flash` / `gemini-2.0-flash` / `gemini-1.5-pro`) with clinical fallback generator
   - Dual PDF & image OCR ingestion engine (`pypdf` + `pytesseract`)
 - **Frontend:** React + Vite
   - Vanilla CSS design system with custom medical color tokens and glassmorphism
@@ -47,6 +47,9 @@ Prior to this update, this repository contained only a blank README and an unsta
 ```bash
 # In the repository root
 pip install -r backend/requirements.txt
+
+# (Optional) Set your Google Gemini API key:
+# $env:GEMINI_API_KEY="your-gemini-api-key"
 
 # Run the backend server (starts on http://localhost:8000)
 python -m uvicorn backend.main:app --host 0.0.0.0 --port 8000 --reload

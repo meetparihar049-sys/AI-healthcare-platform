@@ -8,8 +8,10 @@ logger = logging.getLogger(__name__)
 
 class LLMClient:
     def __init__(self):
-        self.api_key = settings.OPENAI_API_KEY
-        self.model = settings.OPENAI_MODEL
+        self.gemini_key = settings.GEMINI_API_KEY
+        self.gemini_model = settings.GEMINI_MODEL
+        self.openai_key = settings.OPENAI_API_KEY
+        self.openai_model = settings.OPENAI_MODEL
 
     async def generate_response(
         self,
@@ -19,27 +21,71 @@ class LLMClient:
         extra_context: Optional[str] = None
     ) -> str:
         """
-        Generates an AI response using OpenAI GPT-4o if configured,
-        or falls back to rich clinical knowledge generator.
+        Generates an AI response using Google Gemini if configured,
+        or OpenAI / built-in clinical fallback engine.
         """
-        if self.api_key and self.api_key.strip() and not self.api_key.startswith("your-"):
+        # 1. Try Google Gemini API
+        if self.gemini_key and self.gemini_key.strip() and not self.gemini_key.startswith("your-"):
+            try:
+                return await self._call_gemini(system_prompt, messages)
+            except Exception as e:
+                logger.warning(f"Google Gemini call failed ({e}); attempting secondary provider or fallback.")
+
+        # 2. Try OpenAI API as secondary fallback if key exists
+        if self.openai_key and self.openai_key.strip() and not self.openai_key.startswith("your-"):
             try:
                 return await self._call_openai(system_prompt, messages)
             except Exception as e:
                 logger.warning(f"OpenAI call failed ({e}); falling back to local clinical knowledge engine.")
-                return self._generate_fallback(messages[-1]["content"], intent, extra_context)
-        else:
-            logger.info("No OpenAI API key configured; using built-in clinical AI engine.")
-            return self._generate_fallback(messages[-1]["content"], intent, extra_context)
+
+        # 3. Use built-in evidence-based clinical knowledge engine
+        logger.info("Using built-in clinical AI engine (no external API key configured or API error).")
+        return self._generate_fallback(messages[-1]["content"], intent, extra_context)
+
+    async def _call_gemini(self, system_prompt: str, messages: List[Dict[str, str]]) -> str:
+        """Calls Google Gemini Generative Language API (e.g. gemini-1.5-flash / gemini-2.0-flash)."""
+        url = f"https://generativelanguage.googleapis.com/v1beta/models/{self.gemini_model}:generateContent?key={self.gemini_key}"
+        
+        # Convert message history to Gemini contents format
+        contents = []
+        for m in messages:
+            role = "model" if m.get("role") in ["assistant", "system"] else "user"
+            contents.append({
+                "role": role,
+                "parts": [{"text": m.get("content", "")}]
+            })
+
+        payload = {
+            "system_instruction": {
+                "parts": [{"text": system_prompt}]
+            },
+            "contents": contents,
+            "generationConfig": {
+                "temperature": 0.4,
+                "maxOutputTokens": 1000
+            }
+        }
+
+        async with httpx.AsyncClient(timeout=30.0) as client:
+            resp = await client.post(url, json=payload, headers={"Content-Type": "application/json"})
+            resp.raise_for_status()
+            data = resp.json()
+            
+            candidates = data.get("candidates", [])
+            if candidates:
+                parts = candidates[0].get("content", {}).get("parts", [])
+                if parts:
+                    return parts[0].get("text", "")
+            raise ValueError("No text candidate returned from Gemini API")
 
     async def _call_openai(self, system_prompt: str, messages: List[Dict[str, str]]) -> str:
         url = "https://api.openai.com/v1/chat/completions"
         headers = {
-            "Authorization": f"Bearer {self.api_key}",
+            "Authorization": f"Bearer {self.openai_key}",
             "Content-Type": "application/json"
         }
         payload = {
-            "model": self.model,
+            "model": self.openai_model,
             "messages": [{"role": "system", "content": system_prompt}] + messages,
             "temperature": 0.4,
             "max_tokens": 1000
