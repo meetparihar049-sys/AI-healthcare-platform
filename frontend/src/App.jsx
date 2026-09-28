@@ -15,6 +15,20 @@ export default function App() {
   const [authModalOpen, setAuthModalOpen] = useState(false);
   const [initialChatQuery, setInitialChatQuery] = useState("");
 
+  // Theme & Accent customization system
+  const [theme, setTheme] = useState(() => localStorage.getItem("carepulse_theme") || "light");
+  const [accent, setAccent] = useState(() => localStorage.getItem("carepulse_accent") || "violet");
+
+  useEffect(() => {
+    document.documentElement.setAttribute("data-theme", theme);
+    localStorage.setItem("carepulse_theme", theme);
+  }, [theme]);
+
+  useEffect(() => {
+    document.documentElement.setAttribute("data-accent", accent);
+    localStorage.setItem("carepulse_accent", accent);
+  }, [accent]);
+
   useEffect(() => {
     const token = getToken();
     if (token) {
@@ -42,8 +56,12 @@ export default function App() {
     handleSwitchToChatWithQuery("I am experiencing a severe medical emergency right now, please help!");
   }
 
+  function handleToggleTheme() {
+    setTheme((prev) => (prev === "dark" ? "light" : "dark"));
+  }
+
   return (
-    <div className="app-container">
+    <div className="app-container" data-theme={theme} data-accent={accent}>
       <Header
         activeTab={activeTab}
         setActiveTab={setActiveTab}
@@ -51,6 +69,10 @@ export default function App() {
         onOpenAuth={() => setAuthModalOpen(true)}
         onLogout={handleLogout}
         onTriggerEmergency={handleTriggerEmergency}
+        theme={theme}
+        onToggleTheme={handleToggleTheme}
+        accent={accent}
+        onSelectAccent={setAccent}
       />
 
       <DisclaimerBanner />
@@ -61,6 +83,7 @@ export default function App() {
             user={user}
             initialQuery={initialChatQuery}
             onClearInitialQuery={() => setInitialChatQuery("")}
+            onNavigateTab={setActiveTab}
           />
         )}
 

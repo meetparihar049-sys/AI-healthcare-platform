@@ -1,21 +1,34 @@
 import React, { useState, useEffect, useRef } from "react";
 import { api } from "../api";
 
-export default function ChatPage({ user, initialQuery, onClearInitialQuery }) {
+export default function ChatPage({ user, initialQuery, onClearInitialQuery, onNavigateTab }) {
   const [sessions, setSessions] = useState([]);
   const [currentSessionId, setCurrentSessionId] = useState(null);
   const [messages, setMessages] = useState([]);
   const [inputValue, setInputValue] = useState("");
   const [loading, setLoading] = useState(false);
+  const [speakingMsgId, setSpeakingMsgId] = useState(null);
+  const [copiedMsgId, setCopiedMsgId] = useState(null);
+  const [isListening, setIsListening] = useState(false);
   const messagesEndRef = useRef(null);
 
-  const quickSymptoms = [
-    { label: "🤕 Throbbing Headache", prompt: "I have had a throbbing migraine and light sensitivity for 2 days" },
-    { label: "🤒 High Fever & Chills", prompt: "I have a fever of 101F with body chills since yesterday" },
-    { label: "🤢 Stomach Pain & Nausea", prompt: "I am having sharp stomach cramps and nausea after eating" },
-    { label: "🏥 Find Free Hospitals", prompt: "Find free or government hospitals near me" },
-    { label: "💊 Generic Medicines (PMBJP)", prompt: "Where can I get affordable generic medicines under Jan Aushadhi?" },
-    { label: "🛡️ Check Ayushman PM-JAY", prompt: "What are the eligibility criteria and benefits of Ayushman Bharat PM-JAY?" },
+  // Time-aware greeting
+  const getGreeting = () => {
+    const hour = new Date().getHours();
+    if (hour < 12) return "Good morning ☀️";
+    if (hour < 17) return "Good afternoon 🌤️";
+    return "Good evening 🌙";
+  };
+
+  const patientMoodPills = [
+    { label: "😊 Feeling Healthy (Wellness Tips)", prompt: "What are 5 essential daily preventive wellness habits for optimal energy and immunity?" },
+    { label: "🤒 High Fever & Chills", prompt: "I have a fever of 101°F with chills and body ache since yesterday. What should I do?" },
+    { label: "🤕 Throbbing Headache", prompt: "I have had a throbbing migraine and light sensitivity for 2 days. What can help?" },
+    { label: "🤢 Stomach Pain & Acidity", prompt: "I am having sharp stomach cramps and burning acidity after meals." },
+    { label: "🫀 Chest Tightness / Palpitations", prompt: "I feel tightness in my chest and a racing heartbeat. What are warning signs?" },
+    { label: "💊 Cheap Generic Meds (PMBJP)", prompt: "Where can I get affordable generic medicines under Jan Aushadhi and how much can I save?" },
+    { label: "📜 Ayushman PM-JAY Scheme", prompt: "What are the exact eligibility criteria, coverage benefits, and application steps for Ayushman Bharat PM-JAY?" },
+    { label: "🏥 Free Govt Hospitals Near Me", prompt: "Find free or government hospitals near me that provide emergency and general care." },
   ];
 
   useEffect(() => {
@@ -30,16 +43,16 @@ export default function ChatPage({ user, initialQuery, onClearInitialQuery }) {
             id: "welcome",
             role: "assistant",
             content:
-              "### Hello! Welcome to CarePulse AI 👋\n\n" +
-              "I'm your 24/7 personal health guide. You can describe how you're feeling, ask about unusual symptoms, find top nearby clinics, or check government healthcare subsidies.\n\n" +
-              "**How are you feeling right now? Tap a topic below or type your question:**",
+              "### Welcome to CarePulse AI 👋\n\n" +
+              "I'm your 24/7 personal healthcare companion powered by **Google Gemini**. You can describe any symptoms you are feeling, check lab reports, find nearby verified clinics, or check eligibility for government health subsidies.\n\n" +
+              "**How are you feeling right now? Tap any option above or describe your health concerns below:**",
             intent_tag: "general_health",
             urgency_level: 1,
             suggested_actions: [
-              "I have had a throbbing migraine and light sensitivity for 2 days",
+              "I have a fever of 101°F with chills and body ache",
               "What are early warning signs of prediabetes?",
-              "Find free government hospitals near me",
-              "Am I eligible for Ayushman Bharat PM-JAY?",
+              "How to apply for Ayushman Bharat PM-JAY card?",
+              "Find nearest government hospital with ICU",
             ],
           },
         ]);
@@ -47,7 +60,7 @@ export default function ChatPage({ user, initialQuery, onClearInitialQuery }) {
     }
   }, [user]);
 
-  // Handle external query
+  // Handle external query (from facilities/schemes tab)
   useEffect(() => {
     if (initialQuery && initialQuery.trim()) {
       handleSend(initialQuery);
@@ -58,6 +71,15 @@ export default function ChatPage({ user, initialQuery, onClearInitialQuery }) {
   useEffect(() => {
     messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
   }, [messages, loading]);
+
+  // Clean up speech synthesis on unmount
+  useEffect(() => {
+    return () => {
+      if ("speechSynthesis" in window) {
+        window.speechSynthesis.cancel();
+      }
+    };
+  }, []);
 
   async function loadSessions() {
     try {
@@ -159,7 +181,7 @@ export default function ChatPage({ user, initialQuery, onClearInitialQuery }) {
       const errorMsg = {
         id: Date.now() + 2,
         role: "assistant",
-        content: `⚠️ **Health AI Notice:** ${err.message}`,
+        content: `⚠️ **Clinical Notice:** ${err.message}`,
         urgency_level: 1,
       };
       setMessages((prev) => [...prev, errorMsg]);
@@ -168,9 +190,83 @@ export default function ChatPage({ user, initialQuery, onClearInitialQuery }) {
     }
   }
 
+  // Voice Speech Synthesis (Read Aloud)
+  function handleToggleSpeech(msgId, text) {
+    if (!("speechSynthesis" in window)) {
+      alert("Text-to-speech is not supported in this browser.");
+      return;
+    }
+
+    if (speakingMsgId === msgId) {
+      window.speechSynthesis.cancel();
+      setSpeakingMsgId(null);
+      return;
+    }
+
+    window.speechSynthesis.cancel();
+    // Clean raw markdown for natural reading
+    const cleanText = text
+      .replace(/[*#`_~]/g, "")
+      .replace(/https?:\/\/\S+/g, "link")
+      .trim();
+
+    const utterance = new SpeechSynthesisUtterance(cleanText);
+    utterance.rate = 0.95; // Gentle, clear clinical pace
+    utterance.pitch = 1.0;
+    utterance.onend = () => setSpeakingMsgId(null);
+    utterance.onerror = () => setSpeakingMsgId(null);
+
+    setSpeakingMsgId(msgId);
+    window.speechSynthesis.speak(utterance);
+  }
+
+  // Copy advice to clipboard
+  function handleCopy(msgId, text) {
+    const cleanText = text.replace(/[*#`_~]/g, "");
+    navigator.clipboard.writeText(cleanText).then(() => {
+      setCopiedMsgId(msgId);
+      setTimeout(() => setCopiedMsgId(null), 2000);
+    });
+  }
+
+  // Voice Input (Speech-to-Text)
+  function handleToggleVoiceInput() {
+    const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+    if (!SpeechRecognition) {
+      alert("Speech recognition is not supported in this browser. Please use Chrome or Edge.");
+      return;
+    }
+
+    if (isListening) {
+      setIsListening(false);
+      return;
+    }
+
+    try {
+      const recognition = new SpeechRecognition();
+      recognition.continuous = false;
+      recognition.interimResults = false;
+      recognition.lang = "en-US";
+
+      recognition.onstart = () => setIsListening(true);
+      recognition.onresult = (e) => {
+        const transcript = e.results[0][0].transcript;
+        setInputValue((prev) => (prev ? `${prev} ${transcript}` : transcript));
+        setIsListening(false);
+      };
+      recognition.onerror = () => setIsListening(false);
+      recognition.onend = () => setIsListening(false);
+
+      recognition.start();
+    } catch (e) {
+      console.error(e);
+      setIsListening(false);
+    }
+  }
+
   function renderUrgencyBadge(urgency, isEmergency) {
     if (isEmergency || urgency === 4) {
-      return <span className="badge badge-emergency">🚨 Emergency Level 4 (Seek Immediate ER)</span>;
+      return <span className="badge badge-emergency">🚨 Emergency Level 4 (Immediate ER Required)</span>;
     }
     if (urgency === 3) {
       return <span className="badge badge-urgent">⚠️ Urgent Level 3 (Consult Doctor Today)</span>;
@@ -181,22 +277,137 @@ export default function ChatPage({ user, initialQuery, onClearInitialQuery }) {
     return <span className="badge badge-selfcare">✅ Safe Level 1 (Self-Care & Monitor)</span>;
   }
 
+  // Helper to parse inline bold **text** and italic *text*
+  function parseInlineFormatting(text) {
+    const parts = [];
+    const regex = /(\*\*.*?\*\*|\*.*?\*|`.*?`)/g;
+    let lastIdx = 0;
+    let match;
+
+    while ((match = regex.exec(text)) !== null) {
+      if (match.index > lastIdx) {
+        parts.push(text.substring(lastIdx, match.index));
+      }
+      const raw = match[0];
+      if (raw.startsWith("**") && raw.endsWith("**")) {
+        parts.push(
+          <strong key={match.index} className="md-strong-pill">
+            {raw.slice(2, -2)}
+          </strong>
+        );
+      } else if (raw.startsWith("*") && raw.endsWith("*")) {
+        parts.push(<em key={match.index}>{raw.slice(1, -1)}</em>);
+      } else if (raw.startsWith("`") && raw.endsWith("`")) {
+        parts.push(
+          <code key={match.index} style={{ background: "rgba(99,102,241,0.1)", padding: "0.15rem 0.4rem", borderRadius: "4px" }}>
+            {raw.slice(1, -1)}
+          </code>
+        );
+      }
+      lastIdx = regex.lastIndex;
+    }
+
+    if (lastIdx < text.length) {
+      parts.push(text.substring(lastIdx));
+    }
+
+    return parts.length > 0 ? parts : text;
+  }
+
+  // High-End Rich Formatter for Medical Content & Schemes
   function formatMarkdown(content) {
-    return content.split("\n\n").map((block, idx) => {
-      if (block.startsWith("### ")) {
-        return <h3 key={idx} style={{ margin: "0.6rem 0", color: "#0f172a", fontSize: "1.05rem" }}>{block.replace("### ", "")}</h3>;
+    if (!content) return null;
+
+    const blocks = content.split(/\n\n+/);
+
+    return blocks.map((block, idx) => {
+      const trimmed = block.trim();
+
+      // Heading 3 or 2
+      if (trimmed.startsWith("### ") || trimmed.startsWith("## ")) {
+        const title = trimmed.replace(/^###?\s+/, "");
+        return (
+          <h3 key={idx} className="md-heading">
+            <span>🩺</span>
+            <span>{parseInlineFormatting(title)}</span>
+          </h3>
+        );
       }
-      if (block.startsWith("- ") || block.startsWith("* ")) {
-        const items = block.split("\n").map((line, i) => (
-          <li key={i} style={{ marginLeft: "1.25rem", marginBottom: "0.3rem" }}>
-            {line.replace(/^[-*]\s+/, "")}
-          </li>
-        ));
-        return <ul key={idx} style={{ marginBottom: "0.75rem" }}>{items}</ul>;
+
+      // Disclaimer block
+      if (trimmed.startsWith("---") || trimmed.toLowerCase().includes("**disclaimer:**")) {
+        return (
+          <div key={idx} className="md-disclaimer-card">
+            <span style={{ fontSize: "1.1rem" }}>🛡️</span>
+            <div>{parseInlineFormatting(trimmed.replace(/^---\s*/, ""))}</div>
+          </div>
+        );
       }
+
+      // Numbered items: Check if it's a structured healthcare scheme or policy (e.g. 1. **Ayushman Bharat...**)
+      const schemeMatch = trimmed.match(/^(\d+)\.\s+\*\*(.+?)\*\*:\s*([\s\S]*)/);
+      if (schemeMatch) {
+        const [, num, schemeTitle, details] = schemeMatch;
+        // Parse sub-items like - *Coverage:* ..., - *Key Highlight:* ..., - *Where to apply:* ...
+        const subLines = details.split(/\s*-\s+/).filter(Boolean);
+
+        return (
+          <div key={idx} className="scheme-rich-card">
+            <div className="scheme-card-header">
+              <div className="scheme-card-title">
+                <span>🏛️</span>
+                <span>{num}. {schemeTitle}</span>
+              </div>
+              <span className="scheme-coverage-pill">Official Public Scheme</span>
+            </div>
+
+            <div style={{ marginTop: "0.5rem" }}>
+              {subLines.map((line, subIdx) => {
+                const isCoverage = line.toLowerCase().includes("*coverage:*");
+                const isApply = line.toLowerCase().includes("*where to apply:*") || line.toLowerCase().includes("apply");
+                return (
+                  <div key={subIdx} className="scheme-detail-row">
+                    <span style={{ color: isCoverage ? "#059669" : "var(--primary)", fontWeight: 700 }}>
+                      {isCoverage ? "💰 " : isApply ? "📍 " : "✓ "}
+                    </span>
+                    <span>{parseInlineFormatting(line)}</span>
+                  </div>
+                );
+              })}
+            </div>
+
+            {onNavigateTab && (
+              <button
+                className="scheme-apply-link"
+                onClick={() => onNavigateTab("schemes")}
+              >
+                <span>Explore Full Eligibility in Schemes Tab</span>
+                <span>→</span>
+              </button>
+            )}
+          </div>
+        );
+      }
+
+      // Bullet lists (- or *)
+      if (trimmed.startsWith("- ") || trimmed.startsWith("* ")) {
+        const items = trimmed.split(/\n/).filter((l) => l.trim().startsWith("- ") || l.trim().startsWith("* "));
+        return (
+          <ul key={idx} className="md-list">
+            {items.map((line, i) => (
+              <li key={i} className="md-list-item">
+                <span className="md-bullet-icon">✦</span>
+                <div>{parseInlineFormatting(line.replace(/^[-*]\s+/, ""))}</div>
+              </li>
+            ))}
+          </ul>
+        );
+      }
+
+      // Regular paragraph
       return (
-        <p key={idx} style={{ marginBottom: "0.75rem" }}>
-          {block}
+        <p key={idx} style={{ marginBottom: "0.85rem", lineHeight: 1.65 }}>
+          {parseInlineFormatting(trimmed)}
         </p>
       );
     });
@@ -204,18 +415,47 @@ export default function ChatPage({ user, initialQuery, onClearInitialQuery }) {
 
   return (
     <div>
-      {/* Patient Greeting & Quick Symptom Selector Bar */}
-      <div className="patient-hero-card">
-        <div className="hero-text">
-          <h2>🌟 Hello! How are you feeling today?</h2>
-          <p>
-            Choose a common symptom or question below to start an instant, confidential clinical guidance consultation:
-          </p>
-          <div style={{ display: "flex", flexWrap: "wrap", gap: "0.5rem", marginTop: "0.85rem" }}>
-            {quickSymptoms.map((sym, idx) => (
+      {/* Patient Hero / Welcome Dashboard */}
+      <section className="patient-hero-card" aria-label="Patient Welcome">
+        <div className="hero-top-row">
+          <div className="hero-greeting">
+            <h2>
+              <span>{getGreeting()}</span>
+              <span>{user ? `, ${user.full_name.split(" ")[0]}` : ""}</span>
+              <span>👋</span>
+            </h2>
+            <p>
+              Your clinical AI health guide is ready. Tap an instant check-in symptom below, or describe any questions in private:
+            </p>
+          </div>
+
+          <div className="hero-trust-badges">
+            <div className="trust-badge-pill">
+              <span>⚡</span>
+              <span><strong>Gemini AI</strong> Active</span>
+            </div>
+            <div className="trust-badge-pill">
+              <span>🔒</span>
+              <span><strong>100%</strong> Private</span>
+            </div>
+            <div className="trust-badge-pill">
+              <span>🏥</span>
+              <span><strong>16+</strong> Verified Centers</span>
+            </div>
+          </div>
+        </div>
+
+        {/* Quick Symptom & Health Mood Selector */}
+        <div className="mood-selector-container">
+          <div className="mood-selector-label">
+            <span>✨</span>
+            <span>Quick Clinical Consultations & Health Topics:</span>
+          </div>
+          <div className="mood-cards-grid">
+            {patientMoodPills.map((sym, idx) => (
               <button
                 key={idx}
-                className="action-chip"
+                className="mood-card-btn"
                 onClick={() => handleSend(sym.prompt)}
                 disabled={loading}
               >
@@ -224,64 +464,40 @@ export default function ChatPage({ user, initialQuery, onClearInitialQuery }) {
             ))}
           </div>
         </div>
-        <div className="hero-stats">
-          <div className="stat-pill">
-            <div className="stat-num">24/7</div>
-            <div className="stat-label">AI Triage</div>
-          </div>
-          <div className="stat-pill">
-            <div className="stat-num">16+</div>
-            <div className="stat-label">Verified Centers</div>
-          </div>
-          <div className="stat-pill">
-            <div className="stat-num">100%</div>
-            <div className="stat-label">Confidential</div>
-          </div>
-        </div>
-      </div>
+      </section>
 
       {/* Main Chat Interface */}
       <div className="chat-container">
         {/* Sessions Sidebar */}
         <aside className="chat-sidebar">
           <button className="btn-primary" onClick={handleCreateNewSession} style={{ width: "100%" }}>
-            + New Consultation
+            <span>+</span>
+            <span>New Health Consultation</span>
           </button>
 
           <div style={{ flex: 1, overflowY: "auto" }}>
-            <h2 style={{ fontSize: "0.75rem", textTransform: "uppercase", color: "#64748b", fontWeight: 700, margin: "0.5rem 0" }}>
-              My Consultations
-            </h2>
+            <div className="sidebar-header-row" style={{ margin: "0.5rem 0" }}>
+              <span className="sidebar-title">My Consultations</span>
+              <span style={{ fontSize: "0.725rem", color: "var(--text-soft)" }}>{sessions.length} Saved</span>
+            </div>
+
             {sessions.length === 0 ? (
-              <p style={{ fontSize: "0.85rem", color: "#94a3b8", lineHeight: 1.5 }}>
-                {user ? "No past consultations yet. Start one anytime!" : "Sign in to save your consultations across devices."}
+              <p style={{ fontSize: "0.85rem", color: "var(--text-soft)", lineHeight: 1.5, marginTop: "0.5rem" }}>
+                {user ? "No past consultations yet. Start one anytime!" : "Sign in to save your consultations securely across devices."}
               </p>
             ) : (
               sessions.map((s) => (
                 <div
                   key={s.id}
+                  className={`session-item ${currentSessionId === s.id ? "active" : ""}`}
                   onClick={() => selectSession(s.id)}
-                  style={{
-                    padding: "0.65rem 0.85rem",
-                    borderRadius: "10px",
-                    marginBottom: "0.4rem",
-                    cursor: "pointer",
-                    background: currentSessionId === s.id ? "var(--primary-light)" : "transparent",
-                    color: currentSessionId === s.id ? "var(--primary)" : "#334155",
-                    fontWeight: currentSessionId === s.id ? 700 : 500,
-                    display: "flex",
-                    alignItems: "center",
-                    justifyContent: "space-between",
-                    fontSize: "0.85rem",
-                    transition: "all 0.15s ease",
-                  }}
                 >
                   <span style={{ overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>
                     💬 {s.title}
                   </span>
                   <button
                     onClick={(e) => handleDeleteSession(s.id, e)}
-                    style={{ color: "#94a3b8", fontSize: "0.85rem", marginLeft: "0.5rem" }}
+                    style={{ color: "var(--text-soft)", fontSize: "0.85rem", marginLeft: "0.5rem" }}
                     title="Delete consultation"
                   >
                     ✕
@@ -294,6 +510,31 @@ export default function ChatPage({ user, initialQuery, onClearInitialQuery }) {
 
         {/* Main Conversation Window */}
         <div className="chat-main">
+          {/* Doctor Status Bar */}
+          <div className="chat-header-bar">
+            <div className="chat-doctor-status">
+              <div className="doctor-avatar-circle">🩺</div>
+              <div>
+                <div className="doctor-info-title">CarePulse AI Clinical Guide</div>
+                <div className="doctor-info-status">
+                  <span className="pulse-dot" style={{ position: "static", display: "inline-block", width: "8px", height: "8px" }}></span>
+                  <span>Active Now • Powered by Google Gemini</span>
+                </div>
+              </div>
+            </div>
+
+            {messages.length > 1 && (
+              <button
+                className="btn-outline"
+                style={{ padding: "0.35rem 0.85rem", fontSize: "0.78rem" }}
+                onClick={handleCreateNewSession}
+              >
+                Clear / New Topic
+              </button>
+            )}
+          </div>
+
+          {/* Messages Viewport */}
           <div className="messages-viewport">
             {messages.map((m) => (
               <div
@@ -316,23 +557,55 @@ export default function ChatPage({ user, initialQuery, onClearInitialQuery }) {
                     </div>
                   )}
 
+                  {/* Formatted Medical Guidance */}
                   <div>{formatMarkdown(m.content)}</div>
 
-                  {/* Emergency Hotline Quick Access */}
+                  {/* Action Bar for AI Responses: Listen Audio, Copy */}
+                  {m.role === "assistant" && (
+                    <div className="message-actions-bar">
+                      <button
+                        className={`btn-msg-action ${speakingMsgId === m.id ? "speaking" : ""}`}
+                        onClick={() => handleToggleSpeech(m.id, m.content)}
+                        title="Listen to this advice read aloud"
+                      >
+                        <span>{speakingMsgId === m.id ? "⏹️ Stop" : "🔊 Listen"}</span>
+                      </button>
+
+                      <button
+                        className="btn-msg-action"
+                        onClick={() => handleCopy(m.id, m.content)}
+                        title="Copy this clinical advice to clipboard"
+                      >
+                        <span>{copiedMsgId === m.id ? "✓ Copied" : "📋 Copy"}</span>
+                      </button>
+
+                      {onNavigateTab && (
+                        <button
+                          className="btn-msg-action"
+                          onClick={() => onNavigateTab("facilities")}
+                          title="View nearby clinics for this condition"
+                        >
+                          <span>🏥 Find Nearest Clinic</span>
+                        </button>
+                      )}
+                    </div>
+                  )}
+
+                  {/* Immediate Emergency Contacts */}
                   {m.is_emergency && (
                     <div
                       style={{
-                        marginTop: "1rem",
-                        padding: "0.9rem 1.15rem",
+                        marginTop: "1.15rem",
+                        padding: "1rem 1.25rem",
                         background: "#fee2e2",
-                        borderRadius: "12px",
-                        border: "1px solid #f87171",
+                        borderRadius: "14px",
+                        border: "1.5px solid #f87171",
                       }}
                     >
-                      <p style={{ fontWeight: 800, color: "#991b1b", marginBottom: "0.5rem", fontSize: "0.9rem" }}>
-                        Immediate Emergency Contacts:
+                      <p style={{ fontWeight: 800, color: "#991b1b", marginBottom: "0.6rem", fontSize: "0.92rem" }}>
+                        🚨 Immediate 24/7 Emergency Contacts:
                       </p>
-                      <div style={{ display: "flex", flexWrap: "wrap", gap: "0.5rem" }}>
+                      <div style={{ display: "flex", flexWrap: "wrap", gap: "0.6rem" }}>
                         <a href="tel:112" className="btn-emergency" style={{ textDecoration: "none" }}>
                           📞 Dial 112 (Ambulance / Police)
                         </a>
@@ -348,8 +621,8 @@ export default function ChatPage({ user, initialQuery, onClearInitialQuery }) {
 
                   {/* Attached Facilities Preview */}
                   {m.facilities && m.facilities.length > 0 && (
-                    <div style={{ marginTop: "1rem", borderTop: "1px solid #e2e8f0", paddingTop: "0.85rem" }}>
-                      <p style={{ fontSize: "0.825rem", fontWeight: 700, color: "#475569", marginBottom: "0.5rem" }}>
+                    <div style={{ marginTop: "1rem", borderTop: "1px solid var(--border)", paddingTop: "0.85rem" }}>
+                      <p style={{ fontSize: "0.825rem", fontWeight: 800, color: "var(--text-muted)", marginBottom: "0.5rem" }}>
                         🏥 Nearby Verified Facilities:
                       </p>
                       <div style={{ display: "flex", flexDirection: "column", gap: "0.5rem" }}>
@@ -357,11 +630,11 @@ export default function ChatPage({ user, initialQuery, onClearInitialQuery }) {
                           <div
                             key={fac.id}
                             style={{
-                              padding: "0.6rem 0.85rem",
-                              background: "white",
-                              borderRadius: "8px",
-                              border: "1px solid #cbd5e1",
-                              fontSize: "0.825rem",
+                              padding: "0.75rem 1rem",
+                              background: "var(--bg-surface)",
+                              borderRadius: "10px",
+                              border: "1px solid var(--border)",
+                              fontSize: "0.85rem",
                               display: "flex",
                               justifyContent: "space-between",
                               alignItems: "center",
@@ -370,9 +643,9 @@ export default function ChatPage({ user, initialQuery, onClearInitialQuery }) {
                             <div>
                               <strong>{fac.name}</strong> ({fac.type} • {fac.cost_tier})
                               <br />
-                              <span style={{ color: "#64748b" }}>📍 {fac.address}</span>
+                              <span style={{ color: "var(--text-muted)", fontSize: "0.8rem" }}>📍 {fac.address}</span>
                             </div>
-                            <a href={`tel:${fac.phone}`} className="btn-outline" style={{ padding: "0.3rem 0.65rem", fontSize: "0.775rem" }}>
+                            <a href={`tel:${fac.phone}`} className="btn-outline" style={{ padding: "0.35rem 0.75rem", fontSize: "0.78rem" }}>
                               📞 {fac.phone}
                             </a>
                           </div>
@@ -383,14 +656,15 @@ export default function ChatPage({ user, initialQuery, onClearInitialQuery }) {
 
                   {/* Follow-up Suggested Action Chips */}
                   {m.suggested_actions && m.suggested_actions.length > 0 && (
-                    <div style={{ marginTop: "0.85rem", display: "flex", flexWrap: "wrap", gap: "0.4rem" }}>
+                    <div style={{ marginTop: "0.95rem", display: "flex", flexWrap: "wrap", gap: "0.45rem" }}>
                       {m.suggested_actions.map((action, i) => (
                         <button
                           key={i}
                           className="action-chip"
                           onClick={() => handleSend(action)}
                         >
-                          {action} →
+                          <span>{action}</span>
+                          <span>→</span>
                         </button>
                       ))}
                     </div>
@@ -402,8 +676,8 @@ export default function ChatPage({ user, initialQuery, onClearInitialQuery }) {
             {loading && (
               <div className="chat-bubble-row ai">
                 <div className="bubble-avatar ai">⚕️</div>
-                <div className="bubble-content" style={{ display: "flex", alignItems: "center", gap: "0.5rem", color: "#64748b" }}>
-                  <span>CarePulse is reviewing your health inquiry</span>
+                <div className="bubble-content" style={{ display: "flex", alignItems: "center", gap: "0.65rem", color: "var(--text-muted)" }}>
+                  <span>Dr. CarePulse is analyzing with Google Gemini</span>
                   <span className="typing-indicator">
                     <span className="typing-dot"></span>
                     <span className="typing-dot"></span>
@@ -416,20 +690,35 @@ export default function ChatPage({ user, initialQuery, onClearInitialQuery }) {
             <div ref={messagesEndRef} />
           </div>
 
-          {/* Chat Input Bar */}
+          {/* Chat Input Bar with Speech Mic */}
           <div className="chat-input-bar">
             <div className="input-row">
+              <button
+                type="button"
+                className={`btn-mic ${isListening ? "listening" : ""}`}
+                onClick={handleToggleVoiceInput}
+                title={isListening ? "Listening... click to stop" : "Speak your symptoms using microphone"}
+              >
+                {isListening ? "🎙️" : "🎤"}
+              </button>
+
               <input
                 type="text"
                 className="chat-input"
-                placeholder="Describe your symptoms, or ask about doctors, tests, hospitals..."
+                placeholder={isListening ? "Listening to your voice... speak now" : "Describe symptoms, or ask about doctors, tests, schemes..."}
                 value={inputValue}
                 onChange={(e) => setInputValue(e.target.value)}
                 onKeyDown={(e) => e.key === "Enter" && handleSend()}
                 disabled={loading}
               />
-              <button className="btn-primary" onClick={() => handleSend()} disabled={loading || !inputValue.trim()}>
-                Ask AI 🩺
+
+              <button
+                className="btn-primary"
+                onClick={() => handleSend()}
+                disabled={loading || !inputValue.trim()}
+              >
+                <span>Ask AI</span>
+                <span>🩺</span>
               </button>
             </div>
           </div>
