@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { api, getToken, setToken } from "./api";
 import Header from "./components/Header";
+import Footer from "./components/Footer";
 import DisclaimerBanner from "./components/DisclaimerBanner";
 import AuthModal from "./components/AuthModal";
 import ChatPage from "./pages/ChatPage";
@@ -15,19 +16,13 @@ export default function App() {
   const [authModalOpen, setAuthModalOpen] = useState(false);
   const [initialChatQuery, setInitialChatQuery] = useState("");
 
-  // Theme & Accent customization system
-  const [theme, setTheme] = useState(() => localStorage.getItem("carepulse_theme") || "light");
-  const [accent, setAccent] = useState(() => localStorage.getItem("carepulse_accent") || "violet");
+  // Theme customization (ProHealth Daylight by default or Night Care)
+  const [theme, setTheme] = useState(() => localStorage.getItem("prohealth_theme") || "light");
 
   useEffect(() => {
     document.documentElement.setAttribute("data-theme", theme);
-    localStorage.setItem("carepulse_theme", theme);
+    localStorage.setItem("prohealth_theme", theme);
   }, [theme]);
-
-  useEffect(() => {
-    document.documentElement.setAttribute("data-accent", accent);
-    localStorage.setItem("carepulse_accent", accent);
-  }, [accent]);
 
   useEffect(() => {
     const token = getToken();
@@ -50,6 +45,7 @@ export default function App() {
   function handleSwitchToChatWithQuery(query) {
     setInitialChatQuery(query);
     setActiveTab("chat");
+    window.scrollTo({ top: 400, behavior: "smooth" });
   }
 
   function handleTriggerEmergency() {
@@ -61,7 +57,7 @@ export default function App() {
   }
 
   return (
-    <div className="app-container" data-theme={theme} data-accent={accent}>
+    <div className="app-container" data-theme={theme}>
       <Header
         activeTab={activeTab}
         setActiveTab={setActiveTab}
@@ -71,8 +67,6 @@ export default function App() {
         onTriggerEmergency={handleTriggerEmergency}
         theme={theme}
         onToggleTheme={handleToggleTheme}
-        accent={accent}
-        onSelectAccent={setAccent}
       />
 
       <DisclaimerBanner />
@@ -84,6 +78,7 @@ export default function App() {
             initialQuery={initialChatQuery}
             onClearInitialQuery={() => setInitialChatQuery("")}
             onNavigateTab={setActiveTab}
+            onTriggerEmergency={handleTriggerEmergency}
           />
         )}
 
@@ -115,6 +110,11 @@ export default function App() {
           />
         )}
       </main>
+
+      <Footer
+        onNavigateTab={setActiveTab}
+        onTriggerEmergency={handleTriggerEmergency}
+      />
 
       <AuthModal
         isOpen={authModalOpen}

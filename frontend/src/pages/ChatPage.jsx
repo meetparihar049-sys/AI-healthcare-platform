@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useRef } from "react";
 import { api } from "../api";
 
-export default function ChatPage({ user, initialQuery, onClearInitialQuery, onNavigateTab }) {
+export default function ChatPage({ user, initialQuery, onClearInitialQuery, onNavigateTab, onTriggerEmergency }) {
   const [sessions, setSessions] = useState([]);
   const [currentSessionId, setCurrentSessionId] = useState(null);
   const [messages, setMessages] = useState([]);
@@ -11,17 +11,10 @@ export default function ChatPage({ user, initialQuery, onClearInitialQuery, onNa
   const [copiedMsgId, setCopiedMsgId] = useState(null);
   const [isListening, setIsListening] = useState(false);
   const messagesEndRef = useRef(null);
-
-  // Time-aware greeting
-  const getGreeting = () => {
-    const hour = new Date().getHours();
-    if (hour < 12) return "Good morning ☀️";
-    if (hour < 17) return "Good afternoon 🌤️";
-    return "Good evening 🌙";
-  };
+  const chatSectionRef = useRef(null);
 
   const patientMoodPills = [
-    { label: "😊 Feeling Healthy (Wellness Tips)", prompt: "What are 5 essential daily preventive wellness habits for optimal energy and immunity?" },
+    { label: "😊 Feeling Healthy (Wellness Advice)", prompt: "What are 5 essential daily preventive wellness habits for optimal health and immunity?" },
     { label: "🤒 High Fever & Chills", prompt: "I have a fever of 101°F with chills and body ache since yesterday. What should I do?" },
     { label: "🤕 Throbbing Headache", prompt: "I have had a throbbing migraine and light sensitivity for 2 days. What can help?" },
     { label: "🤢 Stomach Pain & Acidity", prompt: "I am having sharp stomach cramps and burning acidity after meals." },
@@ -43,9 +36,9 @@ export default function ChatPage({ user, initialQuery, onClearInitialQuery, onNa
             id: "welcome",
             role: "assistant",
             content:
-              "### Welcome to CarePulse AI 👋\n\n" +
-              "I'm your 24/7 personal healthcare companion powered by **Google Gemini**. You can describe any symptoms you are feeling, check lab reports, find nearby verified clinics, or check eligibility for government health subsidies.\n\n" +
-              "**How are you feeling right now? Tap any option above or describe your health concerns below:**",
+              "### Welcome to ProHealth AI Medical Center 👋\n\n" +
+              "I'm your 24/7 personal healthcare companion powered by **Google Gemini**. You can describe any symptoms you are experiencing, check diagnostic lab reports, find nearby verified clinics, or check eligibility for government health subsidies.\n\n" +
+              "**How are you feeling right now? Tap an option below or describe your health concerns:**",
             intent_tag: "general_health",
             urgency_level: 1,
             suggested_actions: [
@@ -60,11 +53,12 @@ export default function ChatPage({ user, initialQuery, onClearInitialQuery, onNa
     }
   }, [user]);
 
-  // Handle external query (from facilities/schemes tab)
+  // Handle external query
   useEffect(() => {
     if (initialQuery && initialQuery.trim()) {
       handleSend(initialQuery);
       onClearInitialQuery();
+      scrollToChat();
     }
   }, [initialQuery]);
 
@@ -72,7 +66,7 @@ export default function ChatPage({ user, initialQuery, onClearInitialQuery, onNa
     messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
   }, [messages, loading]);
 
-  // Clean up speech synthesis on unmount
+  // Clean up speech synthesis
   useEffect(() => {
     return () => {
       if ("speechSynthesis" in window) {
@@ -80,6 +74,10 @@ export default function ChatPage({ user, initialQuery, onClearInitialQuery, onNa
       }
     };
   }, []);
+
+  function scrollToChat() {
+    chatSectionRef.current?.scrollIntoView({ behavior: "smooth" });
+  }
 
   async function loadSessions() {
     try {
@@ -154,6 +152,7 @@ export default function ChatPage({ user, initialQuery, onClearInitialQuery, onNa
     setMessages((prev) => [...prev, userMsg]);
     setInputValue("");
     setLoading(true);
+    scrollToChat();
 
     try {
       const res = await api.sendMessage(text, currentSessionId);
@@ -190,7 +189,7 @@ export default function ChatPage({ user, initialQuery, onClearInitialQuery, onNa
     }
   }
 
-  // Voice Speech Synthesis (Read Aloud)
+  // Text-to-speech audio reader
   function handleToggleSpeech(msgId, text) {
     if (!("speechSynthesis" in window)) {
       alert("Text-to-speech is not supported in this browser.");
@@ -204,14 +203,13 @@ export default function ChatPage({ user, initialQuery, onClearInitialQuery, onNa
     }
 
     window.speechSynthesis.cancel();
-    // Clean raw markdown for natural reading
     const cleanText = text
       .replace(/[*#`_~]/g, "")
       .replace(/https?:\/\/\S+/g, "link")
       .trim();
 
     const utterance = new SpeechSynthesisUtterance(cleanText);
-    utterance.rate = 0.95; // Gentle, clear clinical pace
+    utterance.rate = 0.95;
     utterance.pitch = 1.0;
     utterance.onend = () => setSpeakingMsgId(null);
     utterance.onerror = () => setSpeakingMsgId(null);
@@ -220,7 +218,7 @@ export default function ChatPage({ user, initialQuery, onClearInitialQuery, onNa
     window.speechSynthesis.speak(utterance);
   }
 
-  // Copy advice to clipboard
+  // Copy advice
   function handleCopy(msgId, text) {
     const cleanText = text.replace(/[*#`_~]/g, "");
     navigator.clipboard.writeText(cleanText).then(() => {
@@ -229,7 +227,7 @@ export default function ChatPage({ user, initialQuery, onClearInitialQuery, onNa
     });
   }
 
-  // Voice Input (Speech-to-Text)
+  // Speech-to-text voice mic
   function handleToggleVoiceInput() {
     const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
     if (!SpeechRecognition) {
@@ -266,7 +264,7 @@ export default function ChatPage({ user, initialQuery, onClearInitialQuery, onNa
 
   function renderUrgencyBadge(urgency, isEmergency) {
     if (isEmergency || urgency === 4) {
-      return <span className="badge badge-emergency">🚨 Emergency Level 4 (Immediate ER Required)</span>;
+      return <span className="badge badge-emergency">🚨 Emergency Level 4 (Seek ER Immediately)</span>;
     }
     if (urgency === 3) {
       return <span className="badge badge-urgent">⚠️ Urgent Level 3 (Consult Doctor Today)</span>;
@@ -277,7 +275,6 @@ export default function ChatPage({ user, initialQuery, onClearInitialQuery, onNa
     return <span className="badge badge-selfcare">✅ Safe Level 1 (Self-Care & Monitor)</span>;
   }
 
-  // Helper to parse inline bold **text** and italic *text*
   function parseInlineFormatting(text) {
     const parts = [];
     const regex = /(\*\*.*?\*\*|\*.*?\*|`.*?`)/g;
@@ -299,7 +296,7 @@ export default function ChatPage({ user, initialQuery, onClearInitialQuery, onNa
         parts.push(<em key={match.index}>{raw.slice(1, -1)}</em>);
       } else if (raw.startsWith("`") && raw.endsWith("`")) {
         parts.push(
-          <code key={match.index} style={{ background: "rgba(99,102,241,0.1)", padding: "0.15rem 0.4rem", borderRadius: "4px" }}>
+          <code key={match.index} style={{ background: "rgba(48,123,196,0.1)", padding: "0.15rem 0.4rem", borderRadius: "4px" }}>
             {raw.slice(1, -1)}
           </code>
         );
@@ -314,7 +311,6 @@ export default function ChatPage({ user, initialQuery, onClearInitialQuery, onNa
     return parts.length > 0 ? parts : text;
   }
 
-  // High-End Rich Formatter for Medical Content & Schemes
   function formatMarkdown(content) {
     if (!content) return null;
 
@@ -323,7 +319,7 @@ export default function ChatPage({ user, initialQuery, onClearInitialQuery, onNa
     return blocks.map((block, idx) => {
       const trimmed = block.trim();
 
-      // Heading 3 or 2
+      // Heading
       if (trimmed.startsWith("### ") || trimmed.startsWith("## ")) {
         const title = trimmed.replace(/^###?\s+/, "");
         return (
@@ -334,21 +330,20 @@ export default function ChatPage({ user, initialQuery, onClearInitialQuery, onNa
         );
       }
 
-      // Disclaimer block
+      // Disclaimer
       if (trimmed.startsWith("---") || trimmed.toLowerCase().includes("**disclaimer:**")) {
         return (
           <div key={idx} className="md-disclaimer-card">
-            <span style={{ fontSize: "1.1rem" }}>🛡️</span>
+            <span style={{ fontSize: "1.2rem" }}>🛡️</span>
             <div>{parseInlineFormatting(trimmed.replace(/^---\s*/, ""))}</div>
           </div>
         );
       }
 
-      // Numbered items: Check if it's a structured healthcare scheme or policy (e.g. 1. **Ayushman Bharat...**)
+      // Numbered items: Public Schemes
       const schemeMatch = trimmed.match(/^(\d+)\.\s+\*\*(.+?)\*\*:\s*([\s\S]*)/);
       if (schemeMatch) {
         const [, num, schemeTitle, details] = schemeMatch;
-        // Parse sub-items like - *Coverage:* ..., - *Key Highlight:* ..., - *Where to apply:* ...
         const subLines = details.split(/\s*-\s+/).filter(Boolean);
 
         return (
@@ -358,7 +353,7 @@ export default function ChatPage({ user, initialQuery, onClearInitialQuery, onNa
                 <span>🏛️</span>
                 <span>{num}. {schemeTitle}</span>
               </div>
-              <span className="scheme-coverage-pill">Official Public Scheme</span>
+              <span className="scheme-coverage-pill">Empaneled Scheme</span>
             </div>
 
             <div style={{ marginTop: "0.5rem" }}>
@@ -367,7 +362,7 @@ export default function ChatPage({ user, initialQuery, onClearInitialQuery, onNa
                 const isApply = line.toLowerCase().includes("*where to apply:*") || line.toLowerCase().includes("apply");
                 return (
                   <div key={subIdx} className="scheme-detail-row">
-                    <span style={{ color: isCoverage ? "#059669" : "var(--primary)", fontWeight: 700 }}>
+                    <span style={{ color: isCoverage ? "#059669" : "#307bc4", fontWeight: 700 }}>
                       {isCoverage ? "💰 " : isApply ? "📍 " : "✓ "}
                     </span>
                     <span>{parseInlineFormatting(line)}</span>
@@ -381,7 +376,7 @@ export default function ChatPage({ user, initialQuery, onClearInitialQuery, onNa
                 className="scheme-apply-link"
                 onClick={() => onNavigateTab("schemes")}
               >
-                <span>Explore Full Eligibility in Schemes Tab</span>
+                <span>View Full Eligibility & Documents in Schemes Tab</span>
                 <span>→</span>
               </button>
             )}
@@ -389,7 +384,7 @@ export default function ChatPage({ user, initialQuery, onClearInitialQuery, onNa
         );
       }
 
-      // Bullet lists (- or *)
+      // Bullet lists
       if (trimmed.startsWith("- ") || trimmed.startsWith("* ")) {
         const items = trimmed.split(/\n/).filter((l) => l.trim().startsWith("- ") || l.trim().startsWith("* "));
         return (
@@ -404,7 +399,6 @@ export default function ChatPage({ user, initialQuery, onClearInitialQuery, onNa
         );
       }
 
-      // Regular paragraph
       return (
         <p key={idx} style={{ marginBottom: "0.85rem", lineHeight: 1.65 }}>
           {parseInlineFormatting(trimmed)}
@@ -414,48 +408,180 @@ export default function ChatPage({ user, initialQuery, onClearInitialQuery, onNa
   }
 
   return (
-    <div>
-      {/* Patient Hero / Welcome Dashboard */}
-      <section className="patient-hero-card" aria-label="Patient Welcome">
-        <div className="hero-top-row">
-          <div className="hero-greeting">
-            <h2>
-              <span>{getGreeting()}</span>
-              <span>{user ? `, ${user.full_name.split(" ")[0]}` : ""}</span>
-              <span>👋</span>
-            </h2>
-            <p>
-              Your clinical AI health guide is ready. Tap an instant check-in symptom below, or describe any questions in private:
+    <div className="prohealth-page-wrapper">
+      {/* =========================================================================
+          PROHEALTH HERO BANNER SECTION (ThemeForest ProHealth Layout)
+          ========================================================================= */}
+      <section className="cs_hero cs_style_1" aria-label="ProHealth Hero">
+        <div className="cs_hero_container">
+          {/* Left Column: Hero Text & Actions */}
+          <div className="cs_hero_text_col">
+            <div className="cs_hero_badge">
+              <span className="cs_hero_badge_icon">🩺</span>
+              <span>All Medical Solutions In One Smart Platform</span>
+            </div>
+
+            <h1 className="cs_hero_title">
+              Your Most Trusted <br />
+              <span>Health Partner</span> For Life.
+            </h1>
+
+            <p className="cs_hero_subtitle">
+              We are committed to providing you with the best medical, clinical, and healthcare guidance to help you live healthier and happier.
             </p>
+
+            <div className="cs_hero_actions">
+              <button className="cs_btn_primary" onClick={scrollToChat}>
+                <span>Start AI Consultation</span>
+                <span className="cs_btn_icon_circle">→</span>
+              </button>
+
+              <button className="cs_btn_secondary" onClick={() => onNavigateTab("facilities")}>
+                <span>Find Doctors & Clinics 🏥</span>
+              </button>
+            </div>
+
+            {/* Quick Hero Statistics */}
+            <div className="cs_hero_stats_bar">
+              <div className="cs_hero_stat">
+                <div className="cs_stat_number">150+</div>
+                <div className="cs_stat_label">Verified Clinics</div>
+              </div>
+              <div className="cs_stat_divider"></div>
+              <div className="cs_hero_stat">
+                <div className="cs_stat_number">24/7</div>
+                <div className="cs_stat_label">AI Clinical Triage</div>
+              </div>
+              <div className="cs_stat_divider"></div>
+              <div className="cs_hero_stat">
+                <div className="cs_stat_number">100%</div>
+                <div className="cs_stat_label">Free & Confidential</div>
+              </div>
+            </div>
           </div>
 
-          <div className="hero-trust-badges">
-            <div className="trust-badge-pill">
-              <span>⚡</span>
-              <span><strong>Gemini AI</strong> Active</span>
-            </div>
-            <div className="trust-badge-pill">
-              <span>🔒</span>
-              <span><strong>100%</strong> Private</span>
-            </div>
-            <div className="trust-badge-pill">
-              <span>🏥</span>
-              <span><strong>16+</strong> Verified Centers</span>
+          {/* Right Column: Hero Doctor Image with Floating Badges */}
+          <div className="cs_hero_img_col">
+            <div className="cs_hero_img_wrapper">
+              <img
+                src="/prohealth-hero.jpg"
+                alt="ProHealth Certified Medical Specialists"
+                className="cs_hero_main_img"
+              />
+
+              {/* Floating Badge 1: 24/7 Clinical Support */}
+              <div className="cs_floating_badge cs_badge_top_left">
+                <div className="cs_badge_icon_pulse">❤️</div>
+                <div>
+                  <div className="cs_badge_title">24/7 Clinical Support</div>
+                  <div className="cs_badge_sub">Emergency Ready • Active</div>
+                </div>
+              </div>
+
+              {/* Floating Badge 2: 99% Satisfaction */}
+              <div className="cs_floating_badge cs_badge_bottom_right">
+                <div className="cs_badge_stars">⭐⭐⭐⭐⭐</div>
+                <div className="cs_badge_title">99% Patient Satisfaction</div>
+                <div className="cs_badge_sub">Trusted by thousands</div>
+              </div>
+
+              {/* Floating Badge 3: Google Gemini Engine */}
+              <div className="cs_floating_badge cs_badge_bottom_left">
+                <div className="cs_gemini_logo">⚡</div>
+                <div>
+                  <div className="cs_badge_title">Google Gemini AI</div>
+                  <div className="cs_badge_sub">Sub-second clinical triage</div>
+                </div>
+              </div>
             </div>
           </div>
         </div>
+      </section>
 
-        {/* Quick Symptom & Health Mood Selector */}
-        <div className="mood-selector-container">
-          <div className="mood-selector-label">
-            <span>✨</span>
-            <span>Quick Clinical Consultations & Health Topics:</span>
+      {/* =========================================================================
+          PROHEALTH 4-COLUMN FEATURE SERVICE BOXES
+          ========================================================================= */}
+      <section className="cs_features_section" aria-label="Healthcare Services">
+        <div className="cs_section_header_center">
+          <span className="cs_section_subtitle">HEALTHCARE EXCELLENCE</span>
+          <h2 className="cs_section_title">Providing Best Medical Services</h2>
+        </div>
+
+        <div className="cs_features_grid">
+          {/* Box 1: Emergency Care */}
+          <div className="cs_feature_card" onClick={onTriggerEmergency}>
+            <div className="cs_feature_icon cs_icon_red">🚨</div>
+            <h3 className="cs_feature_title">24/7 Emergency Care</h3>
+            <p className="cs_feature_desc">
+              Instant clinical risk triage, acute chest pain & stroke screening, and direct national ambulance routing.
+            </p>
+            <div className="cs_feature_link">
+              <span>Immediate ER Hotline (112/911)</span>
+              <span>→</span>
+            </div>
           </div>
-          <div className="mood-cards-grid">
+
+          {/* Box 2: Qualified Doctors */}
+          <div className="cs_feature_card" onClick={() => onNavigateTab("facilities")}>
+            <div className="cs_feature_icon cs_icon_blue">👨‍⚕️</div>
+            <h3 className="cs_feature_title">Qualified Specialists</h3>
+            <p className="cs_feature_desc">
+              Search verified multi-specialty hospitals, trauma centers, and affordable clinics near your neighborhood.
+            </p>
+            <div className="cs_feature_link">
+              <span>Find Nearest Facility</span>
+              <span>→</span>
+            </div>
+          </div>
+
+          {/* Box 3: Public Health Schemes */}
+          <div className="cs_feature_card" onClick={() => onNavigateTab("schemes")}>
+            <div className="cs_feature_icon cs_icon_teal">🏛️</div>
+            <h3 className="cs_feature_title">Govt Health Subsidies</h3>
+            <p className="cs_feature_desc">
+              Check eligibility for Ayushman Bharat PM-JAY (₹5 Lakh free treatment), JSSK maternal care, and senior waivers.
+            </p>
+            <div className="cs_feature_link">
+              <span>Check Eligibility</span>
+              <span>→</span>
+            </div>
+          </div>
+
+          {/* Box 4: Affordable Generic Meds */}
+          <div
+            className="cs_feature_card"
+            onClick={() => handleSend("Where can I find affordable generic medicines under Jan Aushadhi (PMBJP)?")}
+          >
+            <div className="cs_feature_icon cs_icon_green">💊</div>
+            <h3 className="cs_feature_title">Affordable Medicines</h3>
+            <p className="cs_feature_desc">
+              Access quality generic medicines at 50% to 90% discount at 10,000+ Jan Aushadhi Kendras.
+            </p>
+            <div className="cs_feature_link">
+              <span>Find Jan Aushadhi Stores</span>
+              <span>→</span>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {/* =========================================================================
+          PATIENT SYMPTOM / MOOD CHECK-IN BAR
+          ========================================================================= */}
+      <section className="cs_symptom_selector_section">
+        <div className="cs_symptom_card">
+          <div className="cs_symptom_header">
+            <div className="cs_symptom_title_group">
+              <h3>✨ Instant Clinical Guidance</h3>
+              <p>Choose a common condition below to start immediate AI triage, or type below:</p>
+            </div>
+          </div>
+
+          <div className="cs_symptom_pills_grid">
             {patientMoodPills.map((sym, idx) => (
               <button
                 key={idx}
-                className="mood-card-btn"
+                className="cs_symptom_pill_btn"
                 onClick={() => handleSend(sym.prompt)}
                 disabled={loading}
               >
@@ -466,264 +592,242 @@ export default function ChatPage({ user, initialQuery, onClearInitialQuery, onNa
         </div>
       </section>
 
-      {/* Main Chat Interface */}
-      <div className="chat-container">
-        {/* Sessions Sidebar */}
-        <aside className="chat-sidebar">
-          <button className="btn-primary" onClick={handleCreateNewSession} style={{ width: "100%" }}>
-            <span>+</span>
-            <span>New Health Consultation</span>
-          </button>
+      {/* =========================================================================
+          PROHEALTH CLINICAL AI CONSULTATION CONSOLE
+          ========================================================================= */}
+      <section className="cs_chat_section" ref={chatSectionRef} aria-label="AI Consultation">
+        <div className="cs_chat_container">
+          {/* Sessions Sidebar */}
+          <aside className="cs_chat_sidebar">
+            <button className="cs_btn_primary" onClick={handleCreateNewSession} style={{ width: "100%", justifyContent: "center" }}>
+              <span>+</span>
+              <span>New Consultation</span>
+            </button>
 
-          <div style={{ flex: 1, overflowY: "auto" }}>
-            <div className="sidebar-header-row" style={{ margin: "0.5rem 0" }}>
-              <span className="sidebar-title">My Consultations</span>
-              <span style={{ fontSize: "0.725rem", color: "var(--text-soft)" }}>{sessions.length} Saved</span>
-            </div>
+            <div style={{ flex: 1, overflowY: "auto", marginTop: "1rem" }}>
+              <div className="cs_sidebar_title_row">
+                <span className="cs_sidebar_heading">Saved Consultations</span>
+                <span className="cs_sidebar_count">{sessions.length}</span>
+              </div>
 
-            {sessions.length === 0 ? (
-              <p style={{ fontSize: "0.85rem", color: "var(--text-soft)", lineHeight: 1.5, marginTop: "0.5rem" }}>
-                {user ? "No past consultations yet. Start one anytime!" : "Sign in to save your consultations securely across devices."}
-              </p>
-            ) : (
-              sessions.map((s) => (
-                <div
-                  key={s.id}
-                  className={`session-item ${currentSessionId === s.id ? "active" : ""}`}
-                  onClick={() => selectSession(s.id)}
-                >
-                  <span style={{ overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>
-                    💬 {s.title}
-                  </span>
-                  <button
-                    onClick={(e) => handleDeleteSession(s.id, e)}
-                    style={{ color: "var(--text-soft)", fontSize: "0.85rem", marginLeft: "0.5rem" }}
-                    title="Delete consultation"
+              {sessions.length === 0 ? (
+                <p className="cs_sidebar_empty">
+                  {user ? "No past consultations yet. Start one anytime!" : "Sign in to save your consultations across devices."}
+                </p>
+              ) : (
+                sessions.map((s) => (
+                  <div
+                    key={s.id}
+                    className={`cs_session_item ${currentSessionId === s.id ? "active" : ""}`}
+                    onClick={() => selectSession(s.id)}
                   >
-                    ✕
-                  </button>
-                </div>
-              ))
-            )}
-          </div>
-        </aside>
+                    <span className="cs_session_title">💬 {s.title}</span>
+                    <button
+                      onClick={(e) => handleDeleteSession(s.id, e)}
+                      className="cs_session_delete"
+                      title="Delete consultation"
+                    >
+                      ✕
+                    </button>
+                  </div>
+                ))
+              )}
+            </div>
+          </aside>
 
-        {/* Main Conversation Window */}
-        <div className="chat-main">
-          {/* Doctor Status Bar */}
-          <div className="chat-header-bar">
-            <div className="chat-doctor-status">
-              <div className="doctor-avatar-circle">🩺</div>
-              <div>
-                <div className="doctor-info-title">CarePulse AI Clinical Guide</div>
-                <div className="doctor-info-status">
-                  <span className="pulse-dot" style={{ position: "static", display: "inline-block", width: "8px", height: "8px" }}></span>
-                  <span>Active Now • Powered by Google Gemini</span>
+          {/* Main Chat Interface */}
+          <div className="cs_chat_main">
+            {/* Top Doctor Bar */}
+            <div className="cs_chat_header">
+              <div className="cs_doctor_profile">
+                <div className="cs_doctor_avatar">🩺</div>
+                <div>
+                  <div className="cs_doctor_name">Dr. CarePulse AI</div>
+                  <div className="cs_doctor_status">
+                    <span className="cs_status_dot_small"></span>
+                    <span>Active Now • Medical AI Powered by Google Gemini</span>
+                  </div>
                 </div>
               </div>
+
+              {messages.length > 1 && (
+                <button className="cs_btn_secondary_sm" onClick={handleCreateNewSession}>
+                  Clear / Start Fresh
+                </button>
+              )}
             </div>
 
-            {messages.length > 1 && (
-              <button
-                className="btn-outline"
-                style={{ padding: "0.35rem 0.85rem", fontSize: "0.78rem" }}
-                onClick={handleCreateNewSession}
-              >
-                Clear / New Topic
-              </button>
-            )}
-          </div>
+            {/* Messages Viewport */}
+            <div className="cs_messages_viewport">
+              {messages.map((m) => (
+                <div
+                  key={m.id}
+                  className={`cs_bubble_row ${m.role === "user" ? "user" : "ai"} ${m.is_emergency ? "emergency" : ""}`}
+                >
+                  <div className={`cs_bubble_avatar ${m.role === "user" ? "user" : "ai"}`}>
+                    {m.role === "user" ? "👤" : m.is_emergency ? "🚨" : "⚕️"}
+                  </div>
 
-          {/* Messages Viewport */}
-          <div className="messages-viewport">
-            {messages.map((m) => (
-              <div
-                key={m.id}
-                className={`chat-bubble-row ${m.role === "user" ? "user" : "ai"} ${m.is_emergency ? "emergency" : ""}`}
-              >
-                <div className={`bubble-avatar ${m.role === "user" ? "user" : "ai"}`}>
-                  {m.role === "user" ? "👤" : m.is_emergency ? "🚨" : "⚕️"}
-                </div>
-
-                <div className="bubble-content">
-                  {m.role === "assistant" && (
-                    <div className="bubble-meta">
-                      {renderUrgencyBadge(m.urgency_level, m.is_emergency)}
-                      {m.recommended_specialist && (
-                        <span className="badge badge-cost">
-                          👨‍⚕️ Specialist: {m.recommended_specialist}
-                        </span>
-                      )}
-                    </div>
-                  )}
-
-                  {/* Formatted Medical Guidance */}
-                  <div>{formatMarkdown(m.content)}</div>
-
-                  {/* Action Bar for AI Responses: Listen Audio, Copy */}
-                  {m.role === "assistant" && (
-                    <div className="message-actions-bar">
-                      <button
-                        className={`btn-msg-action ${speakingMsgId === m.id ? "speaking" : ""}`}
-                        onClick={() => handleToggleSpeech(m.id, m.content)}
-                        title="Listen to this advice read aloud"
-                      >
-                        <span>{speakingMsgId === m.id ? "⏹️ Stop" : "🔊 Listen"}</span>
-                      </button>
-
-                      <button
-                        className="btn-msg-action"
-                        onClick={() => handleCopy(m.id, m.content)}
-                        title="Copy this clinical advice to clipboard"
-                      >
-                        <span>{copiedMsgId === m.id ? "✓ Copied" : "📋 Copy"}</span>
-                      </button>
-
-                      {onNavigateTab && (
-                        <button
-                          className="btn-msg-action"
-                          onClick={() => onNavigateTab("facilities")}
-                          title="View nearby clinics for this condition"
-                        >
-                          <span>🏥 Find Nearest Clinic</span>
-                        </button>
-                      )}
-                    </div>
-                  )}
-
-                  {/* Immediate Emergency Contacts */}
-                  {m.is_emergency && (
-                    <div
-                      style={{
-                        marginTop: "1.15rem",
-                        padding: "1rem 1.25rem",
-                        background: "#fee2e2",
-                        borderRadius: "14px",
-                        border: "1.5px solid #f87171",
-                      }}
-                    >
-                      <p style={{ fontWeight: 800, color: "#991b1b", marginBottom: "0.6rem", fontSize: "0.92rem" }}>
-                        🚨 Immediate 24/7 Emergency Contacts:
-                      </p>
-                      <div style={{ display: "flex", flexWrap: "wrap", gap: "0.6rem" }}>
-                        <a href="tel:112" className="btn-emergency" style={{ textDecoration: "none" }}>
-                          📞 Dial 112 (Ambulance / Police)
-                        </a>
-                        <a href="tel:911" className="btn-emergency" style={{ textDecoration: "none" }}>
-                          📞 Dial 911 (US / Canada)
-                        </a>
-                        <a href="tel:14416" className="btn-outline" style={{ textDecoration: "none", color: "#991b1b" }}>
-                          📞 Tele-MANAS Crisis (14416)
-                        </a>
+                  <div className="cs_bubble_content">
+                    {m.role === "assistant" && (
+                      <div className="cs_bubble_meta">
+                        {renderUrgencyBadge(m.urgency_level, m.is_emergency)}
+                        {m.recommended_specialist && (
+                          <span className="badge badge-cost">
+                            👨‍⚕️ Specialist: {m.recommended_specialist}
+                          </span>
+                        )}
                       </div>
-                    </div>
-                  )}
+                    )}
 
-                  {/* Attached Facilities Preview */}
-                  {m.facilities && m.facilities.length > 0 && (
-                    <div style={{ marginTop: "1rem", borderTop: "1px solid var(--border)", paddingTop: "0.85rem" }}>
-                      <p style={{ fontSize: "0.825rem", fontWeight: 800, color: "var(--text-muted)", marginBottom: "0.5rem" }}>
-                        🏥 Nearby Verified Facilities:
-                      </p>
-                      <div style={{ display: "flex", flexDirection: "column", gap: "0.5rem" }}>
-                        {m.facilities.map((fac) => (
-                          <div
-                            key={fac.id}
-                            style={{
-                              padding: "0.75rem 1rem",
-                              background: "var(--bg-surface)",
-                              borderRadius: "10px",
-                              border: "1px solid var(--border)",
-                              fontSize: "0.85rem",
-                              display: "flex",
-                              justifyContent: "space-between",
-                              alignItems: "center",
-                            }}
+                    {/* Medical Markdown Content */}
+                    <div className="cs_markdown_body">{formatMarkdown(m.content)}</div>
+
+                    {/* Message Actions */}
+                    {m.role === "assistant" && (
+                      <div className="cs_msg_actions_bar">
+                        <button
+                          className={`cs_btn_msg_action ${speakingMsgId === m.id ? "speaking" : ""}`}
+                          onClick={() => handleToggleSpeech(m.id, m.content)}
+                          title="Listen to this medical guidance read aloud"
+                        >
+                          <span>{speakingMsgId === m.id ? "⏹️ Stop" : "🔊 Listen"}</span>
+                        </button>
+
+                        <button
+                          className="cs_btn_msg_action"
+                          onClick={() => handleCopy(m.id, m.content)}
+                          title="Copy this guidance to clipboard"
+                        >
+                          <span>{copiedMsgId === m.id ? "✓ Copied" : "📋 Copy"}</span>
+                        </button>
+
+                        {onNavigateTab && (
+                          <button
+                            className="cs_btn_msg_action"
+                            onClick={() => onNavigateTab("facilities")}
+                            title="Find nearby clinics for this condition"
                           >
-                            <div>
-                              <strong>{fac.name}</strong> ({fac.type} • {fac.cost_tier})
-                              <br />
-                              <span style={{ color: "var(--text-muted)", fontSize: "0.8rem" }}>📍 {fac.address}</span>
+                            <span>🏥 Find Clinic</span>
+                          </button>
+                        )}
+                      </div>
+                    )}
+
+                    {/* Emergency Hotlines */}
+                    {m.is_emergency && (
+                      <div className="cs_emergency_banner_box">
+                        <p className="cs_emergency_headline">
+                          🚨 Immediate Emergency Hotlines (24/7):
+                        </p>
+                        <div className="cs_emergency_hotline_pills">
+                          <a href="tel:112" className="btn-emergency" style={{ textDecoration: "none" }}>
+                            📞 Dial 112 (National ER)
+                          </a>
+                          <a href="tel:911" className="btn-emergency" style={{ textDecoration: "none" }}>
+                            📞 Dial 911 (US / Canada)
+                          </a>
+                          <a href="tel:14416" className="cs_btn_outline_dark" style={{ textDecoration: "none" }}>
+                            📞 Tele-MANAS Crisis (14416)
+                          </a>
+                        </div>
+                      </div>
+                    )}
+
+                    {/* Attached Facilities */}
+                    {m.facilities && m.facilities.length > 0 && (
+                      <div className="cs_facilities_attached_box">
+                        <p className="cs_facilities_attached_title">
+                          🏥 Nearby Verified Hospitals:
+                        </p>
+                        <div className="cs_facilities_attached_list">
+                          {m.facilities.map((fac) => (
+                            <div key={fac.id} className="cs_facility_attached_item">
+                              <div>
+                                <strong>{fac.name}</strong> ({fac.type} • {fac.cost_tier})
+                                <br />
+                                <span className="cs_facility_addr">📍 {fac.address}</span>
+                              </div>
+                              <a href={`tel:${fac.phone}`} className="cs_btn_call">
+                                📞 {fac.phone}
+                              </a>
                             </div>
-                            <a href={`tel:${fac.phone}`} className="btn-outline" style={{ padding: "0.35rem 0.75rem", fontSize: "0.78rem" }}>
-                              📞 {fac.phone}
-                            </a>
-                          </div>
+                          ))}
+                        </div>
+                      </div>
+                    )}
+
+                    {/* Action Chips */}
+                    {m.suggested_actions && m.suggested_actions.length > 0 && (
+                      <div className="cs_action_chips_row">
+                        {m.suggested_actions.map((action, i) => (
+                          <button
+                            key={i}
+                            className="cs_action_chip"
+                            onClick={() => handleSend(action)}
+                          >
+                            <span>{action}</span>
+                            <span>→</span>
+                          </button>
                         ))}
                       </div>
-                    </div>
-                  )}
-
-                  {/* Follow-up Suggested Action Chips */}
-                  {m.suggested_actions && m.suggested_actions.length > 0 && (
-                    <div style={{ marginTop: "0.95rem", display: "flex", flexWrap: "wrap", gap: "0.45rem" }}>
-                      {m.suggested_actions.map((action, i) => (
-                        <button
-                          key={i}
-                          className="action-chip"
-                          onClick={() => handleSend(action)}
-                        >
-                          <span>{action}</span>
-                          <span>→</span>
-                        </button>
-                      ))}
-                    </div>
-                  )}
+                    )}
+                  </div>
                 </div>
-              </div>
-            ))}
+              ))}
 
-            {loading && (
-              <div className="chat-bubble-row ai">
-                <div className="bubble-avatar ai">⚕️</div>
-                <div className="bubble-content" style={{ display: "flex", alignItems: "center", gap: "0.65rem", color: "var(--text-muted)" }}>
-                  <span>Dr. CarePulse is analyzing with Google Gemini</span>
-                  <span className="typing-indicator">
-                    <span className="typing-dot"></span>
-                    <span className="typing-dot"></span>
-                    <span className="typing-dot"></span>
-                  </span>
+              {loading && (
+                <div className="cs_bubble_row ai">
+                  <div className="cs_bubble_avatar ai">⚕️</div>
+                  <div className="cs_bubble_content cs_loading_bubble">
+                    <span>Dr. CarePulse is analyzing your health inquiry with Google Gemini</span>
+                    <span className="typing-indicator">
+                      <span className="typing-dot"></span>
+                      <span className="typing-dot"></span>
+                      <span className="typing-dot"></span>
+                    </span>
+                  </div>
                 </div>
+              )}
+
+              <div ref={messagesEndRef} />
+            </div>
+
+            {/* Chat Input Bar */}
+            <div className="cs_chat_input_bar">
+              <div className="cs_chat_input_row">
+                <button
+                  type="button"
+                  className={`cs_btn_mic ${isListening ? "listening" : ""}`}
+                  onClick={handleToggleVoiceInput}
+                  title={isListening ? "Listening... click to stop" : "Speak symptoms via microphone"}
+                >
+                  {isListening ? "🎙️" : "🎤"}
+                </button>
+
+                <input
+                  type="text"
+                  className="cs_chat_input"
+                  placeholder={isListening ? "Listening to your voice... speak now" : "Describe your symptoms, or ask about doctors, tests, schemes..."}
+                  value={inputValue}
+                  onChange={(e) => setInputValue(e.target.value)}
+                  onKeyDown={(e) => e.key === "Enter" && handleSend()}
+                  disabled={loading}
+                />
+
+                <button
+                  className="cs_btn_primary cs_btn_send"
+                  onClick={() => handleSend()}
+                  disabled={loading || !inputValue.trim()}
+                >
+                  <span>Ask AI</span>
+                  <span>🩺</span>
+                </button>
               </div>
-            )}
-
-            <div ref={messagesEndRef} />
-          </div>
-
-          {/* Chat Input Bar with Speech Mic */}
-          <div className="chat-input-bar">
-            <div className="input-row">
-              <button
-                type="button"
-                className={`btn-mic ${isListening ? "listening" : ""}`}
-                onClick={handleToggleVoiceInput}
-                title={isListening ? "Listening... click to stop" : "Speak your symptoms using microphone"}
-              >
-                {isListening ? "🎙️" : "🎤"}
-              </button>
-
-              <input
-                type="text"
-                className="chat-input"
-                placeholder={isListening ? "Listening to your voice... speak now" : "Describe symptoms, or ask about doctors, tests, schemes..."}
-                value={inputValue}
-                onChange={(e) => setInputValue(e.target.value)}
-                onKeyDown={(e) => e.key === "Enter" && handleSend()}
-                disabled={loading}
-              />
-
-              <button
-                className="btn-primary"
-                onClick={() => handleSend()}
-                disabled={loading || !inputValue.trim()}
-              >
-                <span>Ask AI</span>
-                <span>🩺</span>
-              </button>
             </div>
           </div>
         </div>
-      </div>
+      </section>
     </div>
   );
 }

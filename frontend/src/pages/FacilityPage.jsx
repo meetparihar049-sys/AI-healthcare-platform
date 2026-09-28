@@ -37,10 +37,10 @@ export default function FacilityPage({ onAskAboutFacility }) {
           <span className="badge badge-routine" style={{ marginBottom: "0.5rem" }}>
             📍 Verified Healthcare Network
           </span>
-          <h2 style={{ fontSize: "1.75rem", fontWeight: 800, color: "#0f172a" }}>
+          <h2 style={{ fontSize: "1.85rem", fontWeight: 800, color: "var(--cs-heading)" }}>
             Find Nearby Clinics, Hospitals & Pharmacies
           </h2>
-          <p style={{ color: "#64748b", fontSize: "0.925rem", marginTop: "0.25rem" }}>
+          <p style={{ color: "var(--cs-body)", fontSize: "0.95rem", marginTop: "0.25rem" }}>
             Explore verified government civil hospitals, free primary health centers (PHCs), multi-specialty centers, and 24/7 pharmacies.
           </p>
         </div>

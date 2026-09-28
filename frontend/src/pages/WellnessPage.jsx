@@ -39,10 +39,10 @@ export default function WellnessPage({ onAskTopic }) {
         <span className="badge badge-selfcare" style={{ marginBottom: "0.5rem" }}>
           🌿 Evidence-Based Preventive Health
         </span>
-        <h2 style={{ fontSize: "1.75rem", fontWeight: 800, color: "#0f172a" }}>
+        <h2 style={{ fontSize: "1.85rem", fontWeight: 800, color: "var(--cs-heading)" }}>
           Preventive Care & Lifespan Wellness
         </h2>
-        <p style={{ color: "#64748b", fontSize: "0.925rem", marginTop: "0.25rem" }}>
+        <p style={{ color: "var(--cs-body)", fontSize: "0.95rem", marginTop: "0.25rem" }}>
           Evidence-based guidance across cardiovascular wellness, metabolic control, mental resilience, adult immunizations, and lifespan screenings.
         </p>
       </div>

@@ -9,100 +9,110 @@ export default function Header({
   onTriggerEmergency,
   theme,
   onToggleTheme,
-  accent,
-  onSelectAccent,
 }) {
   const tabs = [
-    { id: "chat", label: "AI Health Chat", icon: "💬" },
+    { id: "chat", label: "Home & AI Chat", icon: "💬" },
     { id: "facilities", label: "Find Clinics & ER", icon: "🏥" },
     { id: "schemes", label: "Govt Health Schemes", icon: "📋" },
     { id: "reports", label: "Understand Lab Report", icon: "📄" },
     { id: "wellness", label: "Preventive Wellness", icon: "🌿" },
   ];
 
-  const accents = [
-    { id: "violet", name: "Modern Violet", class: "violet", emoji: "🔮" },
-    { id: "emerald", name: "Healing Mint", class: "emerald", emoji: "🌿" },
-    { id: "coral", name: "Warm Sunset", class: "coral", emoji: "🌸" },
-    { id: "ocean", name: "Arctic Ocean", class: "ocean", emoji: "🌊" },
-  ];
-
   return (
-    <header className="app-header">
-      <div className="header-inner">
-        {/* Brand */}
-        <div className="brand-section" onClick={() => setActiveTab("chat")} title="CarePulse AI Home">
-          <div className="brand-icon">
-            <span className="pulse-dot"></span>
-            ⚕️
+    <header className="cs_site_header">
+      {/* ProHealth Top Contact & Emergency Bar */}
+      <div className="cs_topbar">
+        <div className="cs_topbar_inner">
+          <div className="cs_topbar_left">
+            <span className="cs_topbar_item">
+              <span className="cs_topbar_icon">📞</span>
+              <strong>Hotline:</strong>
+              <a href="tel:1234567890">123-456-7890</a>
+            </span>
+            <span className="cs_topbar_sep">|</span>
+            <span className="cs_topbar_item">
+              <span className="cs_topbar_icon">🚑</span>
+              <strong>Ambulance:</strong>
+              <a href="tel:112" style={{ color: "#ef4444", fontWeight: 700 }}>112 / 911</a>
+            </span>
+            <span className="cs_topbar_sep">|</span>
+            <span className="cs_topbar_item cs_topbar_hide_mobile">
+              <span className="cs_topbar_icon">📍</span>
+              <span>123 Anywhere St., Any City</span>
+            </span>
           </div>
-          <div className="brand-text">
-            <h1>CarePulse AI</h1>
-            <p>Smart & Compassionate Health Guide</p>
+
+          <div className="cs_topbar_right">
+            <span className="cs_topbar_status">
+              <span className="cs_status_dot"></span>
+              <span>24/7 AI Triage Online</span>
+            </span>
+
+            <button
+              className="cs_theme_toggle"
+              onClick={onToggleTheme}
+              title={theme === "dark" ? "Switch to ProHealth Daylight Mode" : "Switch to Night Care Mode"}
+            >
+              <span>{theme === "dark" ? "☀️ Daylight" : "🌙 Night Care"}</span>
+            </button>
           </div>
         </div>
+      </div>
 
-        {/* Navigation Tabs */}
-        <nav className="nav-tabs" aria-label="Main Navigation">
-          {tabs.map((tab) => (
-            <button
-              key={tab.id}
-              className={`nav-tab ${activeTab === tab.id ? "active" : ""}`}
-              onClick={() => setActiveTab(tab.id)}
-            >
-              <span>{tab.icon}</span>
-              <span>{tab.label}</span>
-            </button>
-          ))}
-        </nav>
-
-        {/* Controls: Theme, Accent, Emergency & Profile */}
-        <div className="header-actions">
-          {/* Theme & Accent Palette Selector */}
-          <div className="theme-accent-bar" title="Customize theme & accent color">
-            <button
-              className="theme-toggle-btn"
-              onClick={onToggleTheme}
-              title={theme === "dark" ? "Switch to Daylight Calm Mode" : "Switch to Relaxing Night Care Mode"}
-            >
-              {theme === "dark" ? "☀️" : "🌙"}
-            </button>
-
-            {accents.map((acc) => (
-              <span
-                key={acc.id}
-                className={`accent-pill ${acc.class} ${accent === acc.id ? "active" : ""}`}
-                onClick={() => onSelectAccent(acc.id)}
-                title={`Accent: ${acc.name}`}
-              />
-            ))}
+      {/* ProHealth Main Navbar */}
+      <div className="cs_main_header">
+        <div className="cs_header_inner">
+          {/* ProHealth Brand Logo */}
+          <div className="cs_brand" onClick={() => setActiveTab("chat")} title="ProHealth AI Home">
+            <div className="cs_brand_logo_icon">
+              <span>⚕️</span>
+            </div>
+            <div className="cs_brand_text">
+              <h2>Pro<span>Health</span></h2>
+              <p>Medical & Healthcare Center</p>
+            </div>
           </div>
 
-          {/* Emergency Hotline Button */}
-          <button
-            className="btn-emergency"
-            onClick={onTriggerEmergency}
-            title="Immediate emergency help & hotlines"
-          >
-            🚨 Emergency (112/911)
-          </button>
-
-          {/* User Profile / Auth */}
-          {user ? (
-            <div style={{ display: "flex", alignItems: "center", gap: "0.5rem" }}>
-              <div className="user-chip">
-                <span>👋</span>
-                <span>{user.full_name || "Patient"}</span>
-              </div>
-              <button className="btn-auth" onClick={onLogout}>
-                Sign Out
+          {/* Navigation Links */}
+          <nav className="cs_nav_menu" aria-label="Main Navigation">
+            {tabs.map((tab) => (
+              <button
+                key={tab.id}
+                className={`cs_nav_item ${activeTab === tab.id ? "active" : ""}`}
+                onClick={() => setActiveTab(tab.id)}
+              >
+                <span className="cs_nav_icon">{tab.icon}</span>
+                <span>{tab.label}</span>
               </button>
-            </div>
-          ) : (
-            <button className="btn-auth" onClick={onOpenAuth}>
-              Sign In
+            ))}
+          </nav>
+
+          {/* Header Action Buttons */}
+          <div className="cs_header_actions">
+            <button
+              className="btn-emergency"
+              onClick={onTriggerEmergency}
+              title="Immediate emergency help & ambulance hotlines"
+            >
+              🚨 Emergency (112/911)
             </button>
-          )}
+
+            {user ? (
+              <div style={{ display: "flex", alignItems: "center", gap: "0.5rem" }}>
+                <div className="user-chip">
+                  <span>👋</span>
+                  <span>{user.full_name || "Patient"}</span>
+                </div>
+                <button className="btn-auth" onClick={onLogout}>
+                  Sign Out
+                </button>
+              </div>
+            ) : (
+              <button className="cs_btn_appointment" onClick={onOpenAuth}>
+                <span>Sign In / Register</span>
+              </button>
+            )}
+          </div>
         </div>
       </div>
     </header>

@@ -32,10 +32,10 @@ export default function SchemePage({ onAskAboutScheme }) {
         <span className="badge badge-selfcare" style={{ marginBottom: "0.5rem" }}>
           🏛️ Government Subsidies & Benefits
         </span>
-        <h2 style={{ fontSize: "1.75rem", fontWeight: 800, color: "#0f172a" }}>
+        <h2 style={{ fontSize: "1.85rem", fontWeight: 800, color: "var(--cs-heading)" }}>
           Government Healthcare Welfare Schemes
         </h2>
-        <p style={{ color: "#64748b", fontSize: "0.925rem", marginTop: "0.25rem" }}>
+        <p style={{ color: "var(--cs-body)", fontSize: "0.95rem", marginTop: "0.25rem" }}>
           Discover cashless health covers up to ₹5,00,000 (PM-JAY), 100% free maternal care (JSSK), generic medicines at 90% discount (PMBJP), and free chronic illness care.
         </p>
       </div>
