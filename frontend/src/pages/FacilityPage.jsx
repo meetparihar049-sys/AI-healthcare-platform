@@ -32,13 +32,18 @@ export default function FacilityPage({ onAskAboutFacility }) {
 
   return (
     <div>
-      <div style={{ marginBottom: "1.5rem" }}>
-        <h2 style={{ fontSize: "1.5rem", fontWeight: 700, color: "#0f172a" }}>
-          🏥 Healthcare Facilities Directory
-        </h2>
-        <p style={{ color: "#64748b", fontSize: "0.9rem" }}>
-          Discover verified government hospitals, primary health centers (PHCs), private clinics, 24/7 pharmacies, and telehealth services.
-        </p>
+      <div style={{ marginBottom: "1.75rem", display: "flex", justifyContent: "space-between", alignItems: "flex-end", flexWrap: "wrap", gap: "1rem" }}>
+        <div>
+          <span className="badge badge-routine" style={{ marginBottom: "0.5rem" }}>
+            📍 Verified Healthcare Network
+          </span>
+          <h2 style={{ fontSize: "1.75rem", fontWeight: 800, color: "#0f172a" }}>
+            Find Nearby Clinics, Hospitals & Pharmacies
+          </h2>
+          <p style={{ color: "#64748b", fontSize: "0.925rem", marginTop: "0.25rem" }}>
+            Explore verified government civil hospitals, free primary health centers (PHCs), multi-specialty centers, and 24/7 pharmacies.
+          </p>
+        </div>
       </div>
 
       {/* Filter Controls */}

@@ -71,13 +71,16 @@ Hemoglobin                 14.5         g/dL      13.5 - 17.5       NORMAL
   }
 
   return (
-    <div style={{ maxWidth: "900px", margin: "0 auto" }}>
-      <div style={{ marginBottom: "1.5rem" }}>
-        <h2 style={{ fontSize: "1.5rem", fontWeight: 700, color: "#0f172a" }}>
-          📄 Medical Report Explainer
+    <div style={{ maxWidth: "960px", margin: "0 auto" }}>
+      <div style={{ marginBottom: "1.75rem" }}>
+        <span className="badge badge-routine" style={{ marginBottom: "0.5rem" }}>
+          🔬 AI Medical Document Translator
+        </span>
+        <h2 style={{ fontSize: "1.75rem", fontWeight: 800, color: "#0f172a" }}>
+          Understand Your Medical & Lab Reports
         </h2>
-        <p style={{ color: "#64748b", fontSize: "0.9rem" }}>
-          Upload blood tests, imaging reports, or diagnostic panels (PDF, PNG, JPG) to receive a clear, plain-language translation of complex medical metrics.
+        <p style={{ color: "#64748b", fontSize: "0.925rem", marginTop: "0.25rem" }}>
+          Upload blood tests, pathology screens, lipid panels, or doctor summaries (PDF, PNG, JPG) to receive a gentle, plain-language translation of complex numbers.
         </p>
       </div>
 

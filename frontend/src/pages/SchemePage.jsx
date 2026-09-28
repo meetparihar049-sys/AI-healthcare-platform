@@ -28,12 +28,15 @@ export default function SchemePage({ onAskAboutScheme }) {
 
   return (
     <div>
-      <div style={{ marginBottom: "1.5rem" }}>
-        <h2 style={{ fontSize: "1.5rem", fontWeight: 700, color: "#0f172a" }}>
-          📋 Government Healthcare Schemes & Subsidies
+      <div style={{ marginBottom: "1.75rem" }}>
+        <span className="badge badge-selfcare" style={{ marginBottom: "0.5rem" }}>
+          🏛️ Government Subsidies & Benefits
+        </span>
+        <h2 style={{ fontSize: "1.75rem", fontWeight: 800, color: "#0f172a" }}>
+          Government Healthcare Welfare Schemes
         </h2>
-        <p style={{ color: "#64748b", fontSize: "0.9rem" }}>
-          Find public health insurance, free maternal care, generic medicine subsidies, and free specialized treatments available for you and your family.
+        <p style={{ color: "#64748b", fontSize: "0.925rem", marginTop: "0.25rem" }}>
+          Discover cashless health covers up to ₹5,00,000 (PM-JAY), 100% free maternal care (JSSK), generic medicines at 90% discount (PMBJP), and free chronic illness care.
         </p>
       </div>
 
