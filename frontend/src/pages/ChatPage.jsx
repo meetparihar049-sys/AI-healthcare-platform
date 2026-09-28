@@ -59,7 +59,7 @@ export default function ChatPage({ user, initialQuery, onClearInitialQuery, onNa
             role: "assistant",
             content:
               "### Welcome to CarePulse AI Medical Center 👋\n\n" +
-              "I'm your 24/7 personal healthcare companion powered by **Google Gemini**. You can describe any symptoms you are experiencing, check diagnostic lab reports, find nearby verified clinics, or check eligibility for government health subsidies.\n\n" +
+              "I'm your 24/7 personal clinical healthcare companion. You can describe any symptoms you are experiencing, check diagnostic lab reports, find nearby verified clinics, or check eligibility for government health subsidies.\n\n" +
               "**How are you feeling right now? Tap an option below or describe your health concerns:**",
             intent_tag: "general_health",
             urgency_level: 1,
@@ -506,15 +506,6 @@ export default function ChatPage({ user, initialQuery, onClearInitialQuery, onNa
                 <div className="cs_badge_title">99% Patient Satisfaction</div>
                 <div className="cs_badge_sub">Trusted by thousands</div>
               </div>
-
-              {/* Floating Badge 3: Google Gemini Engine */}
-              <div className="cs_floating_badge cs_badge_bottom_left">
-                <div className="cs_gemini_logo">⚡</div>
-                <div>
-                  <div className="cs_badge_title">Google Gemini AI</div>
-                  <div className="cs_badge_sub">Sub-second clinical triage</div>
-                </div>
-              </div>
             </div>
           </div>
         </div>
@@ -668,7 +659,7 @@ export default function ChatPage({ user, initialQuery, onClearInitialQuery, onNa
                   <div className="cs_doctor_status">
                     <span className="cs_status_dot_small" style={{ background: hasCustomKey ? "#10b981" : "#307bc4" }}></span>
                     <span>
-                      {hasCustomKey ? "Active • Live Google Gemini 1.5 AI" : "Active • Clinical Knowledge Engine"}
+                      {hasCustomKey ? "Active • Live AI Engine" : "Active • Clinical Knowledge Engine"}
                     </span>
                   </div>
                 </div>
@@ -688,9 +679,9 @@ export default function ChatPage({ user, initialQuery, onClearInitialQuery, onNa
                     color: hasCustomKey ? "#047857" : "var(--cs-heading)",
                     fontWeight: 600,
                   }}
-                  title="Configure Google Gemini API Key"
+                  title="Configure AI API Key"
                 >
-                  <span>{hasCustomKey ? "⚡ Live Gemini Active" : "🔑 Connect Gemini Key"}</span>
+                  <span>{hasCustomKey ? "⚡ Live AI Active" : "⚙️ AI Settings"}</span>
                 </button>
 
                 {messages.length > 1 && (
@@ -830,7 +821,7 @@ export default function ChatPage({ user, initialQuery, onClearInitialQuery, onNa
                 <div className="cs_bubble_row ai">
                   <div className="cs_bubble_avatar ai">⚕️</div>
                   <div className="cs_bubble_content cs_loading_bubble">
-                    <span>Dr. CarePulse is analyzing your health inquiry with Google Gemini</span>
+                    <span>Dr. CarePulse is analyzing your clinical inquiry...</span>
                     <span className="typing-indicator">
                       <span className="typing-dot"></span>
                       <span className="typing-dot"></span>
@@ -911,7 +902,7 @@ export default function ChatPage({ user, initialQuery, onClearInitialQuery, onNa
               <div style={{ display: "flex", alignItems: "center", gap: "0.6rem" }}>
                 <span style={{ fontSize: "1.6rem" }}>🤖</span>
                 <h3 style={{ fontSize: "1.25rem", fontWeight: 700, margin: 0, color: "var(--cs-heading)" }}>
-                  Google Gemini AI Settings
+                  AI Engine Settings
                 </h3>
               </div>
               <button
@@ -931,7 +922,7 @@ export default function ChatPage({ user, initialQuery, onClearInitialQuery, onNa
             </div>
 
             <p style={{ fontSize: "0.88rem", color: "var(--cs-body)", lineHeight: 1.6, marginBottom: "1rem" }}>
-              Connect your Google Gemini API key to activate live generative medical AI directly in your browser on Vercel without needing an external backend. Without a key, CarePulse AI uses its comprehensive built-in clinical knowledge base.
+              Configure your API key to activate live generative medical responses directly in your browser on Vercel. Without a key, CarePulse AI uses its comprehensive clinical knowledge base.
             </p>
 
             <div
@@ -952,14 +943,14 @@ export default function ChatPage({ user, initialQuery, onClearInitialQuery, onNa
               <span>{hasCustomKey ? "🟢" : "ℹ️"}</span>
               <span>
                 {hasCustomKey
-                  ? "Live Google Gemini AI is ACTIVE! Questions are processed directly via Google Generative AI."
-                  : "Currently running with Built-in Clinical Intelligence. Add a Gemini key below for live AI."}
+                  ? "Live AI Engine is ACTIVE! Inquiries are processed directly via generative AI."
+                  : "Currently running with Built-in Clinical Intelligence. Add an API key below for live AI."}
               </span>
             </div>
 
             <div style={{ marginBottom: "1.25rem" }}>
               <label style={{ display: "block", fontSize: "0.82rem", fontWeight: 600, color: "var(--cs-heading)", marginBottom: "0.4rem" }}>
-                Google Gemini API Key (starts with <code>AIzaSy...</code>):
+                API Key (starts with <code>AIzaSy...</code>):
               </label>
               <input
                 type="password"

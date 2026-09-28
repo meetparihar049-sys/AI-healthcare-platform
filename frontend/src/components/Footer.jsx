@@ -85,7 +85,7 @@ export default function Footer({ onNavigateTab, onTriggerEmergency }) {
 
       <div className="cs_footer_bottom">
         <div className="cs_footer_bottom_inner">
-          <p>© 2026 CarePulse AI. Modern Healthcare Awareness & Access Platform. Powered by Google Gemini AI.</p>
+          <p>© 2026 CarePulse AI. Modern Healthcare Awareness & Access Platform. All Rights Reserved.</p>
           <div className="cs_footer_disclaimer_note">
             <span>Educational guidance platform. Does not replace professional medical diagnosis.</span>
           </div>
