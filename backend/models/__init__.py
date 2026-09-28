@@ -13,8 +13,8 @@ class User(Base):
     age_group = Column(String(50), nullable=True)  # child, adolescent, adult, senior
     created_at = Column(DateTime, default=lambda: datetime.now(timezone.utc))
 
-    chat_sessions = relationship("ChatSession", back_populates="user", cascade="all, delete-orphan")
-    uploaded_reports = relationship("UploadedReport", back_populates="user", cascade="all, delete-orphan")
+    chat_sessions = relationship("ChatSession", back_populates="user", cascade="all, delete-orphan", lazy="selectin")
+    uploaded_reports = relationship("UploadedReport", back_populates="user", cascade="all, delete-orphan", lazy="selectin")
 
 class ChatSession(Base):
     __tablename__ = "chat_sessions"
@@ -26,7 +26,7 @@ class ChatSession(Base):
     updated_at = Column(DateTime, default=lambda: datetime.now(timezone.utc), onupdate=lambda: datetime.now(timezone.utc))
 
     user = relationship("User", back_populates="chat_sessions")
-    messages = relationship("ChatMessage", back_populates="session", cascade="all, delete-orphan", order_by="ChatMessage.id")
+    messages = relationship("ChatMessage", back_populates="session", cascade="all, delete-orphan", order_by="ChatMessage.id", lazy="selectin")
 
 class ChatMessage(Base):
     __tablename__ = "chat_messages"

@@ -32,12 +32,13 @@ async function request(endpoint, options = {}) {
   });
 
   if (!response.ok) {
-    let errorDetail = "An unexpected error occurred.";
+    const rawText = await response.text();
+    let errorDetail = rawText || "An unexpected error occurred.";
     try {
-      const errJson = await response.json();
+      const errJson = JSON.parse(rawText);
       errorDetail = errJson.detail || JSON.stringify(errJson);
     } catch {
-      errorDetail = await response.text();
+      // rawText is already string
     }
     throw new Error(errorDetail);
   }

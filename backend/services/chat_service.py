@@ -115,11 +115,21 @@ class ChatService:
         # Step 4: Normal Clinical Flow
         intent = self.classify_intent(clean_text)
         
-        # Build history context
+        # Build history context safely
         history = []
-        if session and session.messages:
-            for m in session.messages[-8:]:
-                history.append({"role": m.role, "content": m.content})
+        if session:
+            try:
+                res = await db.execute(
+                    select(ChatMessage)
+                    .where(ChatMessage.session_id == session.id)
+                    .order_by(ChatMessage.id.desc())
+                    .limit(8)
+                )
+                past_msgs = list(reversed(res.scalars().all()))
+                for m in past_msgs:
+                    history.append({"role": m.role, "content": m.content})
+            except Exception as e:
+                logger.warning(f"Could not load session history: {e}")
 
         facilities_data = None
         schemes_data = None

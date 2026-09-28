@@ -66,7 +66,7 @@ class LLMClient:
             }
         }
 
-        async with httpx.AsyncClient(timeout=30.0) as client:
+        async with httpx.AsyncClient(timeout=6.0) as client:
             resp = await client.post(url, json=payload, headers={"Content-Type": "application/json"})
             resp.raise_for_status()
             data = resp.json()
