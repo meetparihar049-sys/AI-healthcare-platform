@@ -18,14 +18,14 @@ class Settings(BaseSettings):
     
     # AI Configuration (Google Gemini)
     GEMINI_API_KEY: Optional[str] = None
-    GEMINI_MODEL: str = "gemini-flash-latest"
+    GEMINI_MODEL: str = "gemini-1.5-flash"
     
     # Backwards compatibility / secondary provider (optional)
     OPENAI_API_KEY: Optional[str] = None
     OPENAI_MODEL: str = "gpt-4o"
     
     # CORS
-    CORS_ORIGINS: str = "http://localhost:5173,http://localhost:3000,http://127.0.0.1:5173,http://localhost:8000"
+    CORS_ORIGINS: str = "http://localhost:5173,http://localhost:3000,http://127.0.0.1:5173,http://localhost:8000,https://carepulse-ai-nine.vercel.app,*"
 
     @property
     def cors_origins_list(self) -> List[str]:

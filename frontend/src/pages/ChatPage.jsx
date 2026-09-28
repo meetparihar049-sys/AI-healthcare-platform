@@ -10,8 +10,30 @@ export default function ChatPage({ user, initialQuery, onClearInitialQuery, onNa
   const [speakingMsgId, setSpeakingMsgId] = useState(null);
   const [copiedMsgId, setCopiedMsgId] = useState(null);
   const [isListening, setIsListening] = useState(false);
+  const [showKeyModal, setShowKeyModal] = useState(false);
+  const [geminiKeyInput, setGeminiKeyInput] = useState(localStorage.getItem("carepulse_gemini_key") || "");
+  const [hasCustomKey, setHasCustomKey] = useState(!!localStorage.getItem("carepulse_gemini_key"));
   const messagesEndRef = useRef(null);
   const chatSectionRef = useRef(null);
+
+  function handleSaveKey() {
+    const trimmed = geminiKeyInput.trim();
+    if (trimmed) {
+      localStorage.setItem("carepulse_gemini_key", trimmed);
+      setHasCustomKey(true);
+    } else {
+      localStorage.removeItem("carepulse_gemini_key");
+      setHasCustomKey(false);
+    }
+    setShowKeyModal(false);
+  }
+
+  function handleClearKey() {
+    localStorage.removeItem("carepulse_gemini_key");
+    setGeminiKeyInput("");
+    setHasCustomKey(false);
+    setShowKeyModal(false);
+  }
 
   const patientMoodPills = [
     { label: "😊 Feeling Healthy (Wellness Advice)", prompt: "What are 5 essential daily preventive wellness habits for optimal health and immunity?" },
@@ -644,17 +666,39 @@ export default function ChatPage({ user, initialQuery, onClearInitialQuery, onNa
                 <div>
                   <div className="cs_doctor_name">Dr. CarePulse AI</div>
                   <div className="cs_doctor_status">
-                    <span className="cs_status_dot_small"></span>
-                    <span>Active Now • Medical AI Powered by Google Gemini</span>
+                    <span className="cs_status_dot_small" style={{ background: hasCustomKey ? "#10b981" : "#307bc4" }}></span>
+                    <span>
+                      {hasCustomKey ? "Active • Live Google Gemini 1.5 AI" : "Active • Clinical Knowledge Engine"}
+                    </span>
                   </div>
                 </div>
               </div>
 
-              {messages.length > 1 && (
-                <button className="cs_btn_secondary_sm" onClick={handleCreateNewSession}>
-                  Clear / Start Fresh
+              <div style={{ display: "flex", gap: "0.5rem", alignItems: "center" }}>
+                <button
+                  className="cs_btn_secondary_sm"
+                  onClick={() => setShowKeyModal(true)}
+                  style={{
+                    fontSize: "0.78rem",
+                    display: "flex",
+                    alignItems: "center",
+                    gap: "0.35rem",
+                    background: hasCustomKey ? "rgba(16, 185, 129, 0.12)" : "rgba(39, 71, 96, 0.08)",
+                    borderColor: hasCustomKey ? "#10b981" : "var(--cs-border)",
+                    color: hasCustomKey ? "#047857" : "var(--cs-heading)",
+                    fontWeight: 600,
+                  }}
+                  title="Configure Google Gemini API Key"
+                >
+                  <span>{hasCustomKey ? "⚡ Live Gemini Active" : "🔑 Connect Gemini Key"}</span>
                 </button>
-              )}
+
+                {messages.length > 1 && (
+                  <button className="cs_btn_secondary_sm" onClick={handleCreateNewSession}>
+                    Clear
+                  </button>
+                )}
+              </div>
             </div>
 
             {/* Messages Viewport */}
@@ -828,6 +872,173 @@ export default function ChatPage({ user, initialQuery, onClearInitialQuery, onNa
           </div>
         </div>
       </section>
+
+      {/* Google Gemini API Key Configuration Modal */}
+      {showKeyModal && (
+        <div
+          style={{
+            position: "fixed",
+            inset: 0,
+            background: "rgba(15, 23, 42, 0.65)",
+            backdropFilter: "blur(5px)",
+            zIndex: 9999,
+            display: "flex",
+            alignItems: "center",
+            justifyContent: "center",
+            padding: "1rem",
+          }}
+          onClick={() => setShowKeyModal(false)}
+        >
+          <div
+            style={{
+              background: "white",
+              borderRadius: "16px",
+              padding: "2rem",
+              maxWidth: "520px",
+              width: "100%",
+              boxShadow: "0 25px 50px -12px rgba(0, 0, 0, 0.25)",
+              border: "1px solid #e2e8f0",
+            }}
+            onClick={(e) => e.stopPropagation()}
+          >
+            <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "1rem" }}>
+              <div style={{ display: "flex", alignItems: "center", gap: "0.6rem" }}>
+                <span style={{ fontSize: "1.6rem" }}>🤖</span>
+                <h3 style={{ fontSize: "1.25rem", fontWeight: 700, margin: 0, color: "var(--cs-heading)" }}>
+                  Google Gemini AI Settings
+                </h3>
+              </div>
+              <button
+                type="button"
+                onClick={() => setShowKeyModal(false)}
+                style={{
+                  background: "transparent",
+                  border: "none",
+                  fontSize: "1.3rem",
+                  cursor: "pointer",
+                  color: "#64748b",
+                  padding: "0.2rem",
+                }}
+              >
+                ✕
+              </button>
+            </div>
+
+            <p style={{ fontSize: "0.88rem", color: "var(--cs-body)", lineHeight: 1.6, marginBottom: "1rem" }}>
+              Connect your Google Gemini API key to activate live generative medical AI directly in your browser on Vercel without needing an external backend. Without a key, CarePulse AI uses its comprehensive built-in clinical knowledge base.
+            </p>
+
+            <div
+              style={{
+                background: hasCustomKey ? "rgba(16, 185, 129, 0.08)" : "rgba(48, 123, 196, 0.08)",
+                border: `1px solid ${hasCustomKey ? "#a7f3d0" : "#bae6fd"}`,
+                borderRadius: "8px",
+                padding: "0.75rem 1rem",
+                marginBottom: "1.25rem",
+                display: "flex",
+                alignItems: "center",
+                gap: "0.5rem",
+                fontSize: "0.82rem",
+                color: hasCustomKey ? "#065f46" : "#0369a1",
+                fontWeight: 500,
+              }}
+            >
+              <span>{hasCustomKey ? "🟢" : "ℹ️"}</span>
+              <span>
+                {hasCustomKey
+                  ? "Live Google Gemini AI is ACTIVE! Questions are processed directly via Google Generative AI."
+                  : "Currently running with Built-in Clinical Intelligence. Add a Gemini key below for live AI."}
+              </span>
+            </div>
+
+            <div style={{ marginBottom: "1.25rem" }}>
+              <label style={{ display: "block", fontSize: "0.82rem", fontWeight: 600, color: "var(--cs-heading)", marginBottom: "0.4rem" }}>
+                Google Gemini API Key (starts with <code>AIzaSy...</code>):
+              </label>
+              <input
+                type="password"
+                placeholder="AIzaSy..."
+                value={geminiKeyInput}
+                onChange={(e) => setGeminiKeyInput(e.target.value)}
+                style={{
+                  width: "100%",
+                  padding: "0.75rem 1rem",
+                  borderRadius: "8px",
+                  border: "1.5px solid #cbd5e1",
+                  fontSize: "0.9rem",
+                  fontFamily: "monospace",
+                  outline: "none",
+                  boxSizing: "border-box",
+                }}
+              />
+              <div style={{ marginTop: "0.6rem", fontSize: "0.8rem", color: "#64748b", lineHeight: 1.5 }}>
+                💡 Don't have a key?{" "}
+                <a
+                  href="https://aistudio.google.com/app/apikey"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  style={{ color: "#307bc4", fontWeight: 600, textDecoration: "underline" }}
+                >
+                  Get a 100% Free Gemini API Key from Google AI Studio ↗
+                </a>
+              </div>
+            </div>
+
+            <div style={{ display: "flex", justifyContent: "flex-end", gap: "0.75rem" }}>
+              {hasCustomKey && (
+                <button
+                  type="button"
+                  onClick={handleClearKey}
+                  style={{
+                    padding: "0.6rem 1.1rem",
+                    borderRadius: "8px",
+                    border: "1px solid #ef4444",
+                    background: "rgba(239, 68, 68, 0.08)",
+                    color: "#dc2626",
+                    fontWeight: 600,
+                    cursor: "pointer",
+                    fontSize: "0.85rem",
+                  }}
+                >
+                  Clear Key
+                </button>
+              )}
+              <button
+                type="button"
+                onClick={() => setShowKeyModal(false)}
+                style={{
+                  padding: "0.6rem 1.1rem",
+                  borderRadius: "8px",
+                  border: "1px solid #cbd5e1",
+                  background: "#f8fafc",
+                  color: "#475569",
+                  fontWeight: 600,
+                  cursor: "pointer",
+                  fontSize: "0.85rem",
+                }}
+              >
+                Cancel
+              </button>
+              <button
+                type="button"
+                onClick={handleSaveKey}
+                style={{
+                  padding: "0.6rem 1.3rem",
+                  borderRadius: "8px",
+                  border: "none",
+                  background: "#307bc4",
+                  color: "white",
+                  fontWeight: 600,
+                  cursor: "pointer",
+                  fontSize: "0.85rem",
+                }}
+              >
+                Save & Activate
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 }
