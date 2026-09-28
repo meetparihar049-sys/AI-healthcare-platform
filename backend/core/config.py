@@ -18,7 +18,7 @@ class Settings(BaseSettings):
     
     # AI Configuration (Google Gemini)
     GEMINI_API_KEY: Optional[str] = None
-    GEMINI_MODEL: str = "gemini-1.5-flash"
+    GEMINI_MODEL: str = "gemini-flash-latest"
     
     # Backwards compatibility / secondary provider (optional)
     OPENAI_API_KEY: Optional[str] = None
