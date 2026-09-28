@@ -1,0 +1,150 @@
+[
+  {
+    "id": "sch-001",
+    "name": "Ayushman Bharat — Pradhan Mantri Jan Arogya Yojana (PM-JAY)",
+    "administering_body": "National Health Authority (NHA), Ministry of Health and Family Welfare",
+    "eligibility_criteria": [
+      "Deprived rural families based on SECC 2011 criteria",
+      "Identified occupational categories of urban workers' families",
+      "All senior citizens aged 70 years and above irrespective of income (recent expansion)",
+      "Families listed on the official PM-JAY beneficiary portal"
+    ],
+    "benefits": "Cashless health cover of up to ₹5,00,000 per family per year for secondary and tertiary care hospitalization across public and empaneled private hospitals.",
+    "how_to_apply": "Visit the nearest Ayushman Bharat kiosk at any empaneled hospital or Common Service Centre (CSC) with Aadhaar and Ration Card, or verify eligibility on mera.pmjay.gov.in.",
+    "official_link": "https://pmjay.gov.in",
+    "coverage_amount": "₹5,00,000 per family/year",
+    "target_demographics": ["low_income", "seniors", "rural", "urban_poor"],
+    "state_scope": "National"
+  },
+  {
+    "id": "sch-002",
+    "name": "Janani Shishu Suraksha Karyakram (JSSK)",
+    "administering_body": "Ministry of Health and Family Welfare",
+    "eligibility_criteria": [
+      "All pregnant women delivering in public health institutions",
+      "All sick infants up to 1 year of age accessing government health facilities"
+    ],
+    "benefits": "Completely free and cashless normal deliveries and C-sections, free drugs, free diagnostics, free blood, free diet during hospital stay, and free transport from home to hospital and back.",
+    "how_to_apply": "Directly accessible at any government hospital, CHC, or PHC upon admission for delivery or infant illness.",
+    "official_link": "https://nhm.gov.in",
+    "coverage_amount": "100% Free Service & Transport",
+    "target_demographics": ["women", "infants", "all"],
+    "state_scope": "National"
+  },
+  {
+    "id": "sch-003",
+    "name": "Rashtriya Bal Swasthya Karyakram (RBSK)",
+    "administering_body": "National Health Mission (NHM)",
+    "eligibility_criteria": [
+      "Children from birth up to 18 years of age",
+      "Enrolled in government and government-aided schools or Anganwadi centers"
+    ],
+    "benefits": "Child health screening and early intervention services covering the 4 Ds: Defects at birth, Diseases, Deficiencies, and Development delays including disability. Free surgical correction for congenital heart disease and cleft palate.",
+    "how_to_apply": "Screening is conducted at Anganwadi centers and schools by Mobile Health Teams. Referrals are sent to District Early Intervention Centers (DEIC).",
+    "official_link": "https://rbsk.gov.in",
+    "coverage_amount": "Free Treatment & Surgical Interventions",
+    "target_demographics": ["children", "adolescents"],
+    "state_scope": "National"
+  },
+  {
+    "id": "sch-004",
+    "name": "Pradhan Mantri National Dialysis Programme (PMNDP)",
+    "administering_body": "Ministry of Health and Family Welfare",
+    "eligibility_criteria": [
+      "Patients diagnosed with End-Stage Renal Disease (ESRD) requiring ongoing hemodialysis or peritoneal dialysis",
+      "BPL (Below Poverty Line) patients receive 100% free sessions"
+    ],
+    "benefits": "Free hemodialysis sessions for BPL card holders at district hospitals; heavily subsidized rates for non-BPL patients.",
+    "how_to_apply": "Register at the Dialysis Center of any participating District Hospital with nephrologist referral and BPL certificate.",
+    "official_link": "https://nhm.gov.in/index1.php?lang=1&level=2&sublinkid=1055&lid=614",
+    "coverage_amount": "Free for BPL / Subsidized for Non-BPL",
+    "target_demographics": ["low_income", "chronic_disease", "all"],
+    "state_scope": "National"
+  },
+  {
+    "id": "sch-005",
+    "name": "National Tuberculosis Elimination Programme (NTEP) & Ni-kshay Poshan Yojana",
+    "administering_body": "Central TB Division, MoHFW",
+    "eligibility_criteria": [
+      "All notified TB patients registered on the Ni-kshay portal",
+      "Undergoing treatment in either public or private healthcare sector"
+    ],
+    "benefits": "100% free anti-TB drugs, free molecular diagnostics (CBNAAT/Truenat), plus ₹500/month direct benefit transfer (DBT) to the patient's bank account for nutritional support during treatment.",
+    "how_to_apply": "Report to any government DOTS center or private provider. Once notified on Ni-kshay, provide bank account details for financial credit.",
+    "official_link": "https://nikshay.in",
+    "coverage_amount": "Free Medications + ₹500/month Nutrition Support",
+    "target_demographics": ["chronic_disease", "all"],
+    "state_scope": "National"
+  },
+  {
+    "id": "sch-006",
+    "name": "Pradhan Mantri Bhartiya Janaushadhi Pariyojana (PMBJP)",
+    "administering_body": "Pharmaceuticals & Medical Devices Bureau of India (PMBI)",
+    "eligibility_criteria": [
+      "Open to all citizens of India without any income, age, or documentation barrier"
+    ],
+    "benefits": "Access to quality generic medicines at 50% to 90% cheaper prices compared to branded equivalents, covering over 1,900 medicines and 300 surgical devices.",
+    "how_to_apply": "Walk into any of the 10,000+ Jan Aushadhi Kendras across the country with a valid medical prescription.",
+    "official_link": "https://janaushadhi.gov.in",
+    "coverage_amount": "50% to 90% Price Discount",
+    "target_demographics": ["all"],
+    "state_scope": "National"
+  },
+  {
+    "id": "sch-007",
+    "name": "Mission Indradhanush (Universal Immunization Programme)",
+    "administering_body": "Ministry of Health and Family Welfare",
+    "eligibility_criteria": [
+      "Pregnant women",
+      "Infants and children under 5 years who are unvaccinated or partially vaccinated"
+    ],
+    "benefits": "Free life-saving vaccination against 12 vaccine-preventable diseases (Diphtheria, Pertussis, Tetanus, Polio, Measles, Rubella, severe childhood TB, Hepatitis B, Meningitis, Pneumonia, Rotavirus, Japanese Encephalitis).",
+    "how_to_apply": "Visit any government primary health center, Anganwadi center, or community immunization camp.",
+    "official_link": "https://uipindia.gov.in",
+    "coverage_amount": "100% Free Vaccines",
+    "target_demographics": ["children", "infants", "women"],
+    "state_scope": "National"
+  },
+  {
+    "id": "sch-008",
+    "name": "Tele-MANAS (National Tele Mental Health Programme)",
+    "administering_body": "Ministry of Health and Family Welfare, NIMHANS nodal center",
+    "eligibility_criteria": [
+      "Any individual in distress, experiencing mental health issues, anxiety, depression, insomnia, or suicidal thoughts"
+    ],
+    "benefits": "24/7 free, confidential psychological support, crisis counseling, and referral to mental health specialists in 20+ regional languages via toll-free dial-in.",
+    "how_to_apply": "Toll-free number: 14416 or 1800-891-4416 from any phone anywhere in the country.",
+    "official_link": "https://telemanas.mohfw.gov.in",
+    "coverage_amount": "100% Free 24/7 Counseling",
+    "target_demographics": ["all", "mental_health"],
+    "state_scope": "National"
+  },
+  {
+    "id": "sch-009",
+    "name": "Employees' State Insurance Scheme (ESIS)",
+    "administering_body": "Employees' State Insurance Corporation (ESIC), Ministry of Labour and Employment",
+    "eligibility_criteria": [
+      "Employees earning up to ₹21,000 per month in formal establishments with 10 or more workers"
+    ],
+    "benefits": "Full medical care for self and dependents from day one of employment, sickness cash benefits, maternity benefit (26 weeks paid leave), and disablement pensions.",
+    "how_to_apply": "Employer registers employee on the ESIC portal; Pehchan card issued for accessing ESIC dispensaries and hospitals.",
+    "official_link": "https://esic.gov.in",
+    "coverage_amount": "Comprehensive Medical & Cash Benefits",
+    "target_demographics": ["employed", "low_income"],
+    "state_scope": "National"
+  },
+  {
+    "id": "sch-010",
+    "name": "National Programme for Health Care of the Elderly (NPHCE)",
+    "administering_body": "Ministry of Health and Family Welfare",
+    "eligibility_criteria": [
+      "Citizens aged 60 years and above"
+    ],
+    "benefits": "Dedicated weekly geriatric clinics at PHCs, geriatric units at district hospitals with specialized physiotherapy, free assistive devices, and home-care support for bedridden seniors.",
+    "how_to_apply": "Visit the designated Geriatric OPD at any participating government hospital or district wellness center.",
+    "official_link": "https://main.mohfw.gov.in",
+    "coverage_amount": "Free Dedicated Geriatric Care & Assistive Devices",
+    "target_demographics": ["seniors"],
+    "state_scope": "National"
+  }
+]

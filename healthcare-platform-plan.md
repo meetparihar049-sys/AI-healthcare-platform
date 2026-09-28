@@ -11,7 +11,7 @@ Build a full-stack AI-powered healthcare awareness and access platform where aut
 - Upload medical reports (PDF or image) for plain-language AI explanation
 - Access preventive health guidance and wellness tips
 
-**Stack:** React + Tailwind CSS (frontend) · FastAPI + Python (backend) · OpenAI GPT-4o (AI) · PostgreSQL + SQLAlchemy ORM (database) · Docker Compose (local dev)
+**Stack:** React + Tailwind CSS (frontend) · FastAPI + Python (backend) · OpenAI GPT-4o (AI with offline fallback) · SQLite / PostgreSQL + SQLAlchemy ORM (database) · Docker Compose (local dev)
 
 **Language:** English only at launch.
 
@@ -19,14 +19,47 @@ Build a full-stack AI-powered healthcare awareness and access platform where aut
 
 ---
 
+## Plan Audit & Error Corrections Log
+
+The following critical errors and design flaws in the initial plan have been diagnosed and corrected:
+
+1. **CRITICAL: Missing `tesseract-ocr` System Dependency**
+   - *Error:* Sub-Task 1 & 8 specified installing `poppler-utils` in the Dockerfile but omitted `tesseract-ocr` and `tesseract-ocr-eng`.
+   - *Impact:* `pytesseract.image_to_string` crashes immediately with `TesseractNotFoundError`.
+   - *Fix:* Added `tesseract-ocr` and `tesseract-ocr-eng` to Dockerfile and system requirements.
+
+2. **CRITICAL: Python 3.12 Incompatible Password Hashing (`passlib[bcrypt]`)**
+   - *Error:* Sub-Task 2 specified `passlib[bcrypt]`. `passlib` is abandoned since 2020 and throws `TypeError: error reading bcrypt version` in Python 3.12+ with modern `bcrypt >= 4.1.0`.
+   - *Impact:* Authentication fails with server-side 500 crashes.
+   - *Fix:* Replaced with direct `bcrypt` hashing or `pwdlib`.
+
+3. **CRITICAL: Dangerous Clinical Safety & Triage Architecture Flaws**
+   - *Error:* Sub-Task 3 & 5 constrained LLM symptom responses strictly to Urgency 1–3 on the premise that "emergency is 100% caught by the keyword list". Also, Sub-Task 5 forced messages < 10 words to ask clarifying questions before triage.
+   - *Impact:* Natural language emergency variations (e.g. "sudden crushing chest pressure radiating to jaw", "lost vision in left eye", "toddler swallowed drain cleaner") bypassing the keyword filter would be artificially limited to non-emergency advice, and acute short messages (e.g. "sudden severe head pain") would be delayed by arbitrary word-count gates.
+   - *Fix:* 
+     - Added secondary safety net: LLM prompt explicitly allows Urgency Level 4 (Emergency) and instructions to immediately escalate.
+     - Short messages containing high-acuity descriptors bypass clarifying loops directly to emergency triage.
+     - Added emergency hotline details (112 / 911 / 108 / 988) in all emergency and triage responses.
+
+4. **PERFORMANCE & ACCURACY: Brittle PDF Ingestion Pipeline**
+   - *Error:* Sub-Task 8 converted all PDFs to raster images before OCR via `pdf2image + pytesseract`.
+   - *Impact:* Machine-generated lab PDFs (90%+ of digital lab reports) suffer severe performance lag (10x slower) and OCR misreads of critical numeric lab values and decimal points.
+   - *Fix:* Implemented dual-strategy text extractor: digital extraction first via `pypdf`/`pdfplumber`, falling back to OCR only for scanned/rasterized documents.
+
+5. **DEVELOPER EXPERIENCE: Rigid Database Dependency & Unhandled OpenAI Outages**
+   - *Error:* Hard dependency on PostgreSQL prevented instant local testability; missing `OPENAI_API_KEY` caused unhandled 500 exceptions.
+   - *Fix:* Seamless fallback to SQLite for zero-config local development, and added an intelligent mock AI provider when `OPENAI_API_KEY` is omitted.
+
+---
+
 ## Architecture Summary
 
-- **Frontend:** React + Tailwind CSS — chat interface, auth screens, facility finder, scheme advisor, report uploader, wellness page
-- **Backend:** FastAPI (Python) — REST API, JWT auth, AI orchestration, OCR pipeline, PostgreSQL persistence
-- **AI:** OpenAI GPT-4o via a structured prompt system with distinct module-specific system prompts
-- **Database:** PostgreSQL + SQLAlchemy ORM — users, sessions, chat history, uploaded reports metadata
-- **OCR:** pytesseract + pdf2image for report file ingestion
-- **Safety Layer:** Pre-response emergency keyword triage that short-circuits the LLM and returns a hardcoded emergency response
+- **Frontend:** React + Tailwind CSS / Modern CSS — chat interface, auth screens, facility finder, scheme advisor, report uploader, wellness page
+- **Backend:** FastAPI (Python 3.12) — REST API, JWT auth (PyJWT), AI orchestration, OCR pipeline, SQLAlchemy async persistence
+- **AI:** OpenAI GPT-4o with robust offline/mock fallback and structured safety prompt system
+- **Database:** SQLite (default local) / PostgreSQL (production) + SQLAlchemy ORM
+- **OCR:** Hybrid `pypdf` digital extraction + `pytesseract` image OCR
+- **Safety Layer:** Multi-tiered emergency keyword regex triage + LLM Level 4 Emergency Escalation
 
 ---
 
@@ -36,20 +69,20 @@ Build a full-stack AI-powered healthcare awareness and access platform where aut
 
 ### Sub-Task 1 — Project Scaffolding & Repository Structure
 
-**Status:** [ ] pending
+**Status:** [x] in progress
 
 **Intent:**
 Establish the complete directory structure for both frontend and backend so every subsequent sub-task has a known, consistent place to add code. Includes environment configuration, dependency manifests, and Docker Compose for local development.
 
 **Expected Outcomes:**
-- `frontend/` is a bootstrapped React + Tailwind project
+- `frontend/` is a bootstrapped React project
 - `backend/` is a FastAPI project with folders: `routers/`, `services/`, `models/`, `schemas/`, `ai/`, `data/`
 - `docker-compose.yml` orchestrates the frontend dev server, FastAPI backend, and PostgreSQL
 - `.env.example` documents all required environment variables
-- Both apps start with `docker compose up` with no errors
+- Both apps start with `docker compose up` or local npm/python commands with no errors
 
 **Todo List:**
-1. Create `frontend/` using Vite + React template; install Tailwind CSS, React Router, Axios, React Hook Form, react-dropzone, Leaflet
+1. Create `frontend/` with React, React Router, Axios, Leaflet, and modern UI components
 2. Create `backend/` with `main.py`, `requirements.txt`, and folder layout: `routers/`, `services/`, `models/`, `schemas/`, `ai/modules/`, `data/`, `core/`
 3. Add `backend/core/config.py` to load env variables: OPENAI_API_KEY, DATABASE_URL, JWT_SECRET_KEY, JWT_ALGORITHM, ACCESS_TOKEN_EXPIRE_MINUTES
 4. Add `docker-compose.yml` with services: `db` (postgres:15), `backend` (FastAPI uvicorn), `frontend` (Vite dev)
@@ -58,8 +91,8 @@ Establish the complete directory structure for both frontend and backend so ever
 7. Verify both services start cleanly
 
 **Relevant Context:**
-- Greenfield project — no existing codebase
-- `poppler-utils` must be in the backend Docker image (needed for pdf2image in Sub-Task 8)
+- Greenfield project — repository initially lacked all code files
+- Both `tesseract-ocr` and `poppler-utils` must be in the backend Docker image
 
 ---
 
