@@ -28,7 +28,7 @@ def extract_urgency(text: str, default_urgency: int = 2) -> int:
 
     # Check for explicit urgency phrases in main body (excluding universal disclaimer)
     body_text = text.split("---")[0].lower() if "---" in text else text.lower()
-    if re.search(r"\b(immediate\s+emergency|go\s+to\s+the\s+er|call\s+(?:112|911|ambulance))\b", body_text):
+    if re.search(r"\b(immediate\s+emergency|go\s+to\s+the\s+er|call\s+(?:112|108|ambulance))\b", body_text):
         return 4
     if re.search(r"\b(urgent\s+care|see\s+a\s+doctor\s+today|urgent\s+medical\s+attention)\b", body_text):
         return 3
@@ -43,7 +43,7 @@ def generate_suggested_actions(intent: str, urgency: int) -> List[str]:
     """Generates context-aware interactive suggestion chips."""
     if urgency == 4:
         return [
-            "Call Emergency Services (112 / 911)",
+            "Call Emergency Services (112 / 108)",
             "Find Closest Emergency ER",
             "What to do while waiting for ambulance"
         ]

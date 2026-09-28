@@ -269,13 +269,13 @@ export function getFallbackClinicalResponse(userQuery) {
           "### 🚨 CRITICAL MEDICAL ALERT — SEEK IMMEDIATE EMERGENCY CARE\n\n" +
           "Your reported symptoms may indicate an **acute life-threatening medical emergency** requiring immediate hospital care:\n\n" +
           "**Immediate Life-Saving Steps:**\n" +
-          "- **Call Emergency Hotlines Immediately:** Dial **112** (India/EU) or **911** (US/Canada).\n" +
-          "- **Do Not Drive Yourself:** Have an ambulance or companion transport you to the nearest Emergency Room with an ICU.\n" +
+          "- **Call Emergency Hotlines Immediately:** Dial **112** (All-India Emergency ERSS) or **108** (National Ambulance).\n" +
+          "- **Do Not Drive Yourself:** Have an ambulance (108) or companion transport you to the nearest Emergency Room with an ICU.\n" +
           "- **Rest in a Comfortable Position:** Sit upright or lie on your back with elevated head while waiting for help.\n\n" +
           "---\n**Disclaimer:** CarePulse AI is an informational tool and cannot replace emergency clinical care. In urgent medical situations, seek certified emergency treatment immediately.",
       },
       facilities: FALLBACK_FACILITIES.filter((f) => f.emergency_available),
-      suggested_actions: ["Dial 112 / 911 immediately", "Find nearest trauma hospital with ICU", "What to do while waiting for ambulance"],
+      suggested_actions: ["Dial 112 / 108 immediately", "Find nearest trauma hospital with ICU", "What to do while waiting for ambulance"],
     };
   }
 
@@ -509,7 +509,7 @@ export function getFallbackClinicalResponse(userQuery) {
           "- Increase dietary potassium through bananas, spinach, and beans (unless kidney disease is present).\n" +
           "- Monitor home BP readings seated after 5 minutes of rest, keeping a morning and evening log.\n\n" +
           "**3. Red Flag Warnings:**\n" +
-          "- Sudden BP > 180/120 mmHg with severe headache, blurred vision, or chest tightness (Hypertensive Crisis — call 112/911).\n\n" +
+          "- Sudden BP > 180/120 mmHg with severe headache, blurred vision, or chest tightness (Hypertensive Crisis — call 112 or 108 immediately).\n\n" +
           "**4. Recommended Specialist:** **Cardiologist** or **General Physician**.\n\n" +
           "---\n**Disclaimer:** CarePulse AI provides clinical health education and is not a substitute for formal medical evaluation.",
       },
@@ -596,7 +596,7 @@ export function getFallbackClinicalResponse(userQuery) {
           "- Engage in a 20-minute daily walk outdoors to stimulate natural serotonin release.\n\n" +
           "**3. Professional Support:**\n" +
           "- Speaking with a certified psychologist or psychiatrist provides structured cognitive behavioral coping tools.\n" +
-          "- **Immediate Crisis Support:** Tele-MANAS (India free 24/7 mental health hotline: 14416 / 1800-891-4416) or 988 (USA).\n\n" +
+          "- **Immediate Crisis Support:** Tele-MANAS (National 24/7 Mental Health Helpline of India: 14416 / 1800-891-4416).\n\n" +
           "---\n**Disclaimer:** CarePulse AI provides compassionate mental wellness guidance and is not a substitute for therapy or crisis intervention.",
       },
       facilities: [],
@@ -754,7 +754,7 @@ export function getFallbackClinicalResponse(userQuery) {
           "- **Apex Multi-Specialty & Trauma Centre:** 24/7 ICU, critical trauma resuscitation, and public welfare wards.\n" +
           "- **Urban Primary Health Centre (UPHC):** First-contact outpatient consultations, free maternal health, and essential generic medicines.\n\n" +
           "You can filter options by cost tier (Free/Subsidized) and department in our **Find Clinics & ER** tab above.\n\n" +
-          "---\n**Disclaimer:** In case of sudden severe emergencies, call 112 or 911 immediately.",
+          "---\n**Disclaimer:** In case of sudden severe emergencies, dial 112 (National ERSS) or 108 (Ambulance) immediately.",
       },
       facilities: FALLBACK_FACILITIES.slice(0, 2),
       suggested_actions: ["Find nearest trauma hospital with ICU", "Explore all facilities in Clinics tab", "Check PM-JAY empaneled hospitals"],

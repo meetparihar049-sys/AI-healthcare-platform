@@ -7,7 +7,7 @@ def test_emergency_chest_pain():
     assert result["is_emergency"] is True
     assert result["urgency_level"] == 4
     assert "CRITICAL MEDICAL EMERGENCY ALERT" in result["response_text"]
-    assert any("112" in h["number"] or "911" in h["number"] for h in result["hotlines"])
+    assert any("112" in h["number"] or "108" in h["number"] for h in result["hotlines"])
 
 def test_emergency_stroke():
     result = check_emergency_triage("My father has sudden facial droop and slurred speech")
@@ -20,7 +20,7 @@ def test_emergency_mental_health_crisis():
     assert result is not None
     assert result["is_emergency"] is True
     assert "Tele-MANAS" in result["response_text"]
-    assert "988" in result["response_text"]
+    assert "14416" in result["response_text"]
 
 def test_informational_query_no_lockout():
     # Educational question about chest pain should NOT trigger emergency lockout

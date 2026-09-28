@@ -60,13 +60,19 @@ export default function Footer({ onNavigateTab, onTriggerEmergency }) {
               <p>In life-threatening situations, contact certified medical personnel immediately:</p>
               <div className="cs_emergency_pills">
                 <a href="tel:112" className="cs_emergency_pill">
-                  🚑 112 (National ER)
+                  🚨 112 (National ERSS)
                 </a>
-                <a href="tel:911" className="cs_emergency_pill">
-                  📞 911 (US / Canada)
+                <a href="tel:108" className="cs_emergency_pill">
+                  🚑 108 (Ambulance Service)
+                </a>
+                <a href="tel:102" className="cs_emergency_pill">
+                  👶 102 (Maternal / JSSK)
+                </a>
+                <a href="tel:104" className="cs_emergency_pill">
+                  🩺 104 (Health Helpline)
                 </a>
                 <a href="tel:14416" className="cs_emergency_pill">
-                  🧠 14416 (Tele-MANAS)
+                  🧠 14416 (Tele-MANAS Crisis)
                 </a>
               </div>
               <button className="btn-emergency" onClick={onTriggerEmergency} style={{ marginTop: "1rem", width: "100%" }}>

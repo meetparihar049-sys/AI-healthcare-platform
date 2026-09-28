@@ -538,7 +538,7 @@ export default function ChatPage({ user, initialQuery, onClearInitialQuery, onNa
               Instant clinical risk triage, acute chest pain & stroke screening, and direct national ambulance routing.
             </p>
             <div className="cs_feature_link">
-              <span>Immediate ER Hotline (112/911)</span>
+              <span>National ERSS (112) / Ambulance (108)</span>
               <span>→</span>
             </div>
           </div>
@@ -762,17 +762,23 @@ export default function ChatPage({ user, initialQuery, onClearInitialQuery, onNa
                     {m.is_emergency && (
                       <div className="cs_emergency_banner_box">
                         <p className="cs_emergency_headline">
-                          🚨 Immediate Emergency Hotlines (24/7):
+                          🚨 Immediate Emergency Hotlines (India 24/7):
                         </p>
                         <div className="cs_emergency_hotline_pills">
                           <a href="tel:112" className="btn-emergency" style={{ textDecoration: "none" }}>
-                            📞 Dial 112 (National ER)
+                            📞 Dial 112 (National ERSS)
                           </a>
-                          <a href="tel:911" className="btn-emergency" style={{ textDecoration: "none" }}>
-                            📞 Dial 911 (US / Canada)
+                          <a href="tel:108" className="btn-emergency" style={{ textDecoration: "none" }}>
+                            🚑 Dial 108 (Ambulance Service)
+                          </a>
+                          <a href="tel:102" className="cs_btn_outline_dark" style={{ textDecoration: "none" }}>
+                            👶 Dial 102 (Maternal / Infant)
+                          </a>
+                          <a href="tel:104" className="cs_btn_outline_dark" style={{ textDecoration: "none" }}>
+                            🩺 Dial 104 (Health Advice)
                           </a>
                           <a href="tel:14416" className="cs_btn_outline_dark" style={{ textDecoration: "none" }}>
-                            📞 Tele-MANAS Crisis (14416)
+                            🧠 Tele-MANAS (14416)
                           </a>
                         </div>
                       </div>

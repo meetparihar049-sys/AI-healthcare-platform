@@ -95,6 +95,6 @@ All 12 unit and integration tests pass cleanly.
 ## 🛡️ Medical Disclaimer & Safety Protocol
 
 CarePulse is engineered with patient safety as the foundational priority:
-1. **Pre-LLM Emergency Triage:** Queries containing critical emergency markers (e.g. crushing chest pain, slurred speech, active convulsions, severe anaphylaxis, or acute distress) immediately short-circuit to a deterministic red alert with emergency dial-in buttons for **112 / 911 / 14416 (Tele-MANAS)**.
+1. **Pre-LLM Emergency Triage:** Queries containing critical emergency markers (e.g. crushing chest pain, slurred speech, active convulsions, severe anaphylaxis, or acute distress) immediately short-circuit to a deterministic red alert with emergency dial-in buttons for **112 (National ERSS) / 108 (Ambulance) / 14416 (Tele-MANAS)**.
 2. **Hedged Language:** All non-emergency AI recommendations use non-definitive, hedged language (*"These symptoms may be consistent with..."*) and strictly mandate physician evaluation.
 3. **No Direct Drug Prescriptions:** The system never prescribes specific dosages of prescription drugs.

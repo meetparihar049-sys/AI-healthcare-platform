@@ -25,20 +25,20 @@ export default function Header({
         <div className="cs_topbar_inner">
           <div className="cs_topbar_left">
             <span className="cs_topbar_item">
-              <span className="cs_topbar_icon">📞</span>
-              <strong>Hotline:</strong>
-              <a href="tel:1234567890">123-456-7890</a>
+              <span className="cs_topbar_icon">🩺</span>
+              <strong>Health Helpline:</strong>
+              <a href="tel:104">104 (National Health Line)</a>
             </span>
             <span className="cs_topbar_sep">|</span>
             <span className="cs_topbar_item">
               <span className="cs_topbar_icon">🚑</span>
-              <strong>Ambulance:</strong>
-              <a href="tel:112" style={{ color: "#ef4444", fontWeight: 700 }}>112 / 911</a>
+              <strong>Emergency & Ambulance:</strong>
+              <a href="tel:112" style={{ color: "#ef4444", fontWeight: 700 }}>112 / 108 (India)</a>
             </span>
             <span className="cs_topbar_sep">|</span>
             <span className="cs_topbar_item cs_topbar_hide_mobile">
-              <span className="cs_topbar_icon">📍</span>
-              <span>123 Anywhere St., Any City</span>
+              <span className="cs_topbar_icon">🇮🇳</span>
+              <span>All India Emergency Response (ERSS 112)</span>
             </span>
           </div>
 
@@ -94,7 +94,7 @@ export default function Header({
               onClick={onTriggerEmergency}
               title="Immediate emergency help & ambulance hotlines"
             >
-              🚨 Emergency (112/911)
+              🚨 Emergency (112 / 108)
             </button>
 
             {user ? (

@@ -43,10 +43,12 @@ UNIVERSAL_DISCLAIMER = (
 )
 
 HOTLINE_INFO = [
-    {"name": "Emergency Medical Services (India)", "number": "112 / 108"},
-    {"name": "Emergency Services (US/Canada)", "number": "911"},
-    {"name": "Tele-MANAS National Mental Health Crisis Hotline", "number": "14416 / 1800-891-4416"},
-    {"name": "988 Suicide & Crisis Lifeline (US)", "number": "988"}
+    {"name": "National Emergency Response Support System (ERSS)", "number": "112"},
+    {"name": "National Emergency Ambulance Service", "number": "108"},
+    {"name": "Janani Shishu Suraksha Karyakram (Maternal/Infant)", "number": "102"},
+    {"name": "National Health Information Helpline", "number": "104"},
+    {"name": "Tele-MANAS National Mental Health Crisis Helpline", "number": "14416 / 1800-891-4416"},
+    {"name": "Kiran Mental Health Helpline", "number": "1800-599-0019"}
 ]
 
 def check_emergency_triage(user_message: str) -> Optional[Dict[str, Any]]:
@@ -70,14 +72,13 @@ def check_emergency_triage(user_message: str) -> Optional[Dict[str, Any]]:
             if is_mental_health:
                 content = (
                     "🚨 **IMMEDIATE CRISIS SUPPORT ALERT** 🚨\n\n"
-                    "If you or someone you know is struggling or in crisis, help is available right now. "
-                    "You are not alone, and compassionate professionals are ready to listen and support you 24/7:\n\n"
-                    "- **India (Tele-MANAS):** Call toll-free **14416** or **1800-891-4416**\n"
-                    "- **Kiran Helpline (India):** Call **1800-599-0019**\n"
-                    "- **US / Canada (Crisis Lifeline):** Call or text **988**\n"
-                    "- **UK:** Call **111** or Samaritan hotline **116 123**\n"
-                    "- **Emergency Services:** Call **112** (India/EU) or **911** (US)\n\n"
-                    "Please reach out to one of these services immediately or contact someone you trust."
+                    "If you or someone you know is struggling or in crisis, help is available right now in India 24/7. "
+                    "You are not alone, and compassionate professionals are ready to listen and support you:\n\n"
+                    "- **Tele-MANAS (Govt of India):** Call toll-free **14416** or **1800-891-4416**\n"
+                    "- **Kiran Helpline (Ministry of Social Justice):** Call **1800-599-0019**\n"
+                    "- **National Emergency Hotline:** Call **112**\n"
+                    "- **National Health Helpline:** Call **104**\n\n"
+                    "Please reach out to one of these free services immediately or contact someone you trust."
                 )
             else:
                 content = (
@@ -85,13 +86,13 @@ def check_emergency_triage(user_message: str) -> Optional[Dict[str, Any]]:
                     "Your symptoms indicate a potentially life-threatening medical situation requiring **immediate emergency care**.\n\n"
                     "**Immediate Actions:**\n"
                     "1. **Call Emergency Services immediately:**\n"
-                    "   - **112** or **108** (India)\n"
-                    "   - **911** (US / Canada)\n"
-                    "   - **999** (UK) / **000** (Australia)\n"
-                    "2. Do NOT drive yourself to the hospital; have an ambulance or someone else take you.\n"
+                    "   - **112** (All-India Emergency Response Support System - ERSS)\n"
+                    "   - **108** (National Ambulance Emergency Service)\n"
+                    "   - **102** (Free Pregnancy, Maternal & Infant Ambulance)\n"
+                    "2. Do NOT drive yourself to the hospital; dispatch an ambulance (108/112) or have someone transport you.\n"
                     "3. Rest in a safe, seated or semi-reclined position while emergency assistance is en route.\n"
                     "4. If experiencing chest pain, difficulty breathing, or severe trauma, alert someone nearby immediately.\n\n"
-                    "This AI platform cannot treat emergencies. Please seek emergency medical care immediately."
+                    "CarePulse AI cannot treat emergencies. Please seek certified emergency medical care immediately."
                 )
 
             return {
@@ -100,10 +101,10 @@ def check_emergency_triage(user_message: str) -> Optional[Dict[str, Any]]:
                 "intent": "emergency",
                 "response_text": content,
                 "suggested_actions": [
-                    "Call Emergency Services (112 / 911)",
-                    "Find Nearest Emergency Hospital",
-                    "Notify Emergency Contact",
-                    "Call Crisis Hotline"
+                    "Call Emergency Services (112 / 108)",
+                    "Find Nearest Emergency Hospital with ICU",
+                    "Call Tele-MANAS (14416)",
+                    "What to do while waiting for ambulance"
                 ],
                 "hotlines": HOTLINE_INFO,
                 "disclaimer": UNIVERSAL_DISCLAIMER
