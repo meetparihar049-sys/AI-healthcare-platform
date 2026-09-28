@@ -313,10 +313,10 @@ export function getFallbackClinicalResponse(userQuery) {
           "- *'When should I schedule a follow-up appointment to re-evaluate my progress?'*\n\n" +
           "---\n**Disclaimer:** CarePulse AI provides educational health guidance and is not a substitute for formal medical evaluation.",
       },
-      facilities: FALLBACK_FACILITIES.slice(0, 2),
+      facilities: [],
       suggested_actions: [
-        "Find nearest verified clinic",
-        "How can I save money on generic medicines?",
+        "What OTC medicines are safe?",
+        "How to prepare for blood tests?",
         "Check government health schemes",
       ],
     };
@@ -349,11 +349,11 @@ export function getFallbackClinicalResponse(userQuery) {
           "**4. Recommended Specialist:** **General Physician** or Family Doctor.\n\n" +
           "---\n**Disclaimer:** CarePulse AI provides clinical health education and is not a substitute for formal medical evaluation.",
       },
-      facilities: FALLBACK_FACILITIES.slice(0, 2),
+      facilities: [],
       suggested_actions: [
+        "When is fever dangerous in adults?",
         "What questions should I ask my doctor?",
-        "Find nearest primary clinic",
-        "Check Ayushman Bharat PM-JAY coverage",
+        "Safe hydration fluids during fever",
       ],
     };
   }
@@ -383,8 +383,12 @@ export function getFallbackClinicalResponse(userQuery) {
           "**3. Recommended Specialist:** **Neurologist** or **General Physician**.\n\n" +
           "---\n**Disclaimer:** CarePulse AI provides clinical health education and is not a substitute for formal medical evaluation.",
       },
-      facilities: FALLBACK_FACILITIES.slice(0, 2),
-      suggested_actions: ["Find nearest primary clinic", "What triggers migraine attacks?", "What questions should I ask my doctor?"],
+      facilities: [],
+      suggested_actions: [
+        "What triggers migraine attacks?",
+        "What questions should I ask my doctor?",
+        "Difference between migraine and tension headache",
+      ],
     };
   }
 
@@ -426,8 +430,12 @@ export function getFallbackClinicalResponse(userQuery) {
           "**4. Recommended Specialist:** **Gastroenterologist** or **General Physician**.\n\n" +
           "---\n**Disclaimer:** CarePulse AI provides educational health guidance and is not a substitute for formal medical evaluation.",
       },
-      facilities: FALLBACK_FACILITIES.slice(0, 2),
-      suggested_actions: ["What questions should I ask my doctor?", "Find nearest clinic", "Check Jan Aushadhi generic medicines"],
+      facilities: [],
+      suggested_actions: [
+        "What foods are in the BRAT diet?",
+        "When does stomach pain indicate appendicitis?",
+        "What questions should I ask my doctor?",
+      ],
     };
   }
 
@@ -463,8 +471,12 @@ export function getFallbackClinicalResponse(userQuery) {
           "**4. Recommended Specialist:** **Endocrinologist** or **Diabetologist**.\n\n" +
           "---\n**Disclaimer:** CarePulse AI provides clinical health education and is not a substitute for formal medical evaluation.",
       },
-      facilities: FALLBACK_FACILITIES.slice(0, 2),
-      suggested_actions: ["What questions should I ask my doctor?", "Check generic diabetes meds at Jan Aushadhi", "Find nearest specialist clinic"],
+      facilities: [],
+      suggested_actions: [
+        "What foods lower blood sugar naturally?",
+        "What is the difference between Type 1 and Type 2 diabetes?",
+        "Check generic diabetes meds at Jan Aushadhi",
+      ],
     };
   }
 
@@ -501,8 +513,12 @@ export function getFallbackClinicalResponse(userQuery) {
           "**4. Recommended Specialist:** **Cardiologist** or **General Physician**.\n\n" +
           "---\n**Disclaimer:** CarePulse AI provides clinical health education and is not a substitute for formal medical evaluation.",
       },
-      facilities: FALLBACK_FACILITIES.slice(0, 2),
-      suggested_actions: ["Find nearest cardiology hospital", "What questions should I ask my doctor?", "Explore Preventive Wellness tab"],
+      facilities: [],
+      suggested_actions: [
+        "What is the DASH diet meal plan?",
+        "How to measure blood pressure accurately at home?",
+        "What questions should I ask my doctor?",
+      ],
     };
   }
 
@@ -540,8 +556,12 @@ export function getFallbackClinicalResponse(userQuery) {
           "**4. Recommended Specialist:** **ENT Specialist** or **Pulmonologist**.\n\n" +
           "---\n**Disclaimer:** CarePulse AI provides clinical health education and is not a substitute for formal medical evaluation.",
       },
-      facilities: FALLBACK_FACILITIES.slice(0, 2),
-      suggested_actions: ["What questions should I ask my doctor?", "Find nearest primary clinic", "Check Jan Aushadhi generic medicines"],
+      facilities: [],
+      suggested_actions: [
+        "Home remedies for persistent dry cough",
+        "Difference between cold and influenza",
+        "What questions should I ask my doctor?",
+      ],
     };
   }
 
@@ -579,8 +599,12 @@ export function getFallbackClinicalResponse(userQuery) {
           "- **Immediate Crisis Support:** Tele-MANAS (India free 24/7 mental health hotline: 14416 / 1800-891-4416) or 988 (USA).\n\n" +
           "---\n**Disclaimer:** CarePulse AI provides compassionate mental wellness guidance and is not a substitute for therapy or crisis intervention.",
       },
-      facilities: FALLBACK_FACILITIES.slice(0, 2),
-      suggested_actions: ["Explore Preventive Wellness tab", "Find nearest clinic", "What questions should I ask my doctor?"],
+      facilities: [],
+      suggested_actions: [
+        "How to do 4-7-8 calming breathing?",
+        "5 rules for healthy sleep hygiene",
+        "Explore Preventive Wellness tab",
+      ],
     };
   }
 
@@ -617,8 +641,12 @@ export function getFallbackClinicalResponse(userQuery) {
           "**3. Recommended Specialist:** **Clinical Dietitian** or **General Physician**.\n\n" +
           "---\n**Disclaimer:** CarePulse AI provides general nutritional awareness and is not an individualized medical diet prescription.",
       },
-      facilities: FALLBACK_FACILITIES.slice(0, 2),
-      suggested_actions: ["Explore Preventive Wellness tab", "Check lab test screening in Reports", "What questions should I ask my doctor?"],
+      facilities: [],
+      suggested_actions: [
+        "What foods are high in Vitamin B12 and D3?",
+        "Explore Preventive Wellness tab",
+        "Check lab test screening in Reports",
+      ],
     };
   }
 
@@ -654,8 +682,12 @@ export function getFallbackClinicalResponse(userQuery) {
           "- Bring your valid physician's prescription to any store or use the official `Jan Aushadhi Sugam` mobile app.\n\n" +
           "---\n**Disclaimer:** Always consult your physician or licensed pharmacist before switching medications.",
       },
-      facilities: FALLBACK_FACILITIES.slice(0, 2),
-      suggested_actions: ["Find nearest Jan Aushadhi store", "What questions should I ask my doctor?", "Check Ayushman Bharat PM-JAY"],
+      facilities: [],
+      suggested_actions: [
+        "Are generic medicines as effective as branded?",
+        "Check Ayushman Bharat PM-JAY",
+        "What questions should I ask my doctor?",
+      ],
     };
   }
 
@@ -665,7 +697,6 @@ export function getFallbackClinicalResponse(userQuery) {
     query.includes("pmjay") ||
     query.includes("scheme") ||
     query.includes("subsidy") ||
-    query.includes("free hospital") ||
     query.includes("bpl") ||
     query.includes("insurance")
   ) {
@@ -691,13 +722,46 @@ export function getFallbackClinicalResponse(userQuery) {
           "   - Free basic blood and urine diagnostics at Primary Health Centers (PHCs) and subsidized hemodialysis under PMNDP.\n\n" +
           "---\n**Disclaimer:** General health guidance only. Verify exact eligibility and document checklists at official government portals.",
       },
-      facilities: FALLBACK_FACILITIES,
+      facilities: [],
       schemes: FALLBACK_SCHEMES,
-      suggested_actions: ["Check PM-JAY eligibility documents", "Find empaneled hospital in Facilities tab", "Explore all schemes in Schemes tab"],
+      suggested_actions: ["Check PM-JAY eligibility documents", "Explore all schemes in Schemes tab", "What questions should I ask my doctor?"],
     };
   }
 
-  // 13. Dynamic General Health Fallback
+  // 13. Hospital / Clinic Finder (Explicit Request)
+  if (
+    query.includes("hospital") ||
+    query.includes("clinic") ||
+    query.includes("doctor near me") ||
+    query.includes("find clinic") ||
+    query.includes("emergency room") ||
+    query.includes("phc") ||
+    query.includes("chc") ||
+    query.includes("where can i go")
+  ) {
+    return {
+      session_id: 1,
+      intent: "facility_finder",
+      urgency_level: 1,
+      is_emergency: false,
+      recommended_specialist: "Nearest Empaneled Healthcare Facility",
+      assistant_message: {
+        id: Date.now(),
+        role: "assistant",
+        content:
+          "### 🏥 Healthcare Facilities & Medical Centers Near You\n\n" +
+          "Here are verified healthcare facilities providing routine OPD, diagnostics, and emergency trauma care:\n\n" +
+          "- **Apex Multi-Specialty & Trauma Centre:** 24/7 ICU, critical trauma resuscitation, and public welfare wards.\n" +
+          "- **Urban Primary Health Centre (UPHC):** First-contact outpatient consultations, free maternal health, and essential generic medicines.\n\n" +
+          "You can filter options by cost tier (Free/Subsidized) and department in our **Find Clinics & ER** tab above.\n\n" +
+          "---\n**Disclaimer:** In case of sudden severe emergencies, call 112 or 911 immediately.",
+      },
+      facilities: FALLBACK_FACILITIES.slice(0, 2),
+      suggested_actions: ["Find nearest trauma hospital with ICU", "Explore all facilities in Clinics tab", "Check PM-JAY empaneled hospitals"],
+    };
+  }
+
+  // 14. Dynamic General Health Fallback
   return {
     session_id: 1,
     intent: "general_health",
@@ -724,10 +788,10 @@ export function getFallbackClinicalResponse(userQuery) {
         `**5. Recommended Specialist:** Consult a **General Physician / Internal Medicine Specialist** for an accurate in-person physical assessment.\n\n` +
         `---\n**Disclaimer:** CarePulse AI provides clinical health education and is not a substitute for formal medical evaluation.`,
     },
-    facilities: FALLBACK_FACILITIES.slice(0, 2),
+    facilities: [],
     suggested_actions: [
       "What questions should I ask my doctor?",
-      "Find nearest verified clinic",
+      "Explore Preventive Wellness tab",
       "Check government health schemes",
     ],
   };
@@ -796,10 +860,10 @@ export const api = {
               role: "assistant",
               content: aiResponseText,
             },
-            facilities: FALLBACK_FACILITIES.slice(0, 2),
+            facilities: [],
             suggested_actions: [
               "What questions should I ask my doctor?",
-              "Find nearest primary clinic",
+              "Explore Preventive Wellness tab",
               "Check government health schemes",
             ],
           };

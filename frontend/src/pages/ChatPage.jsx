@@ -778,11 +778,11 @@ export default function ChatPage({ user, initialQuery, onClearInitialQuery, onNa
                       </div>
                     )}
 
-                    {/* Attached Facilities */}
-                    {m.facilities && m.facilities.length > 0 && (
+                    {/* Attached Facilities - only shown when specifically seeking a facility or in an emergency */}
+                    {m.facilities && m.facilities.length > 0 && (m.is_emergency || m.intent_tag === "facility_finder" || m.intent_tag === "emergency_triage" || m.urgency_level >= 4) && (
                       <div className="cs_facilities_attached_box">
                         <p className="cs_facilities_attached_title">
-                          🏥 Nearby Verified Hospitals:
+                          🏥 Nearby Emergency / Recommended Facilities:
                         </p>
                         <div className="cs_facilities_attached_list">
                           {m.facilities.map((fac) => (
