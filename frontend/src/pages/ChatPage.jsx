@@ -36,7 +36,7 @@ export default function ChatPage({ user, initialQuery, onClearInitialQuery, onNa
             id: "welcome",
             role: "assistant",
             content:
-              "### Welcome to ProHealth AI Medical Center 👋\n\n" +
+              "### Welcome to CarePulse AI Medical Center 👋\n\n" +
               "I'm your 24/7 personal healthcare companion powered by **Google Gemini**. You can describe any symptoms you are experiencing, check diagnostic lab reports, find nearby verified clinics, or check eligibility for government health subsidies.\n\n" +
               "**How are you feeling right now? Tap an option below or describe your health concerns:**",
             intent_tag: "general_health",
@@ -465,7 +465,7 @@ export default function ChatPage({ user, initialQuery, onClearInitialQuery, onNa
             <div className="cs_hero_img_wrapper">
               <img
                 src="/prohealth-hero.jpg"
-                alt="ProHealth Certified Medical Specialists"
+                alt="CarePulse AI Certified Medical Specialists"
                 className="cs_hero_main_img"
               />
 

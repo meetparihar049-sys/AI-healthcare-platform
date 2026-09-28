@@ -10,8 +10,8 @@ export default function Footer({ onNavigateTab, onTriggerEmergency }) {
             <div className="cs_footer_brand">
               <div className="cs_brand_icon">⚕️</div>
               <div className="cs_brand_text">
-                <h3>ProHealth AI</h3>
-                <p>Medical & Healthcare Center</p>
+                <h3>CarePulse AI</h3>
+                <p>Smart & Compassionate Health Guide</p>
               </div>
             </div>
             <p className="cs_footer_desc">
@@ -27,7 +27,7 @@ export default function Footer({ onNavigateTab, onTriggerEmergency }) {
             </div>
             <div className="cs_footer_contact_item">
               <span>✉️</span>
-              <span>support@prohealth.ai</span>
+              <span>support@carepulse.ai</span>
             </div>
           </div>
 
@@ -79,7 +79,7 @@ export default function Footer({ onNavigateTab, onTriggerEmergency }) {
 
       <div className="cs_footer_bottom">
         <div className="cs_footer_bottom_inner">
-          <p>© 2026 ProHealth AI. Delight Blue Modern Healthcare Platform. Powered by Google Gemini AI.</p>
+          <p>© 2026 CarePulse AI. Modern Healthcare Awareness & Access Platform. Powered by Google Gemini AI.</p>
           <div className="cs_footer_disclaimer_note">
             <span>Educational guidance platform. Does not replace professional medical diagnosis.</span>
           </div>

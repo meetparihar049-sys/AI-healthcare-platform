@@ -51,7 +51,7 @@ export default function Header({
             <button
               className="cs_theme_toggle"
               onClick={onToggleTheme}
-              title={theme === "dark" ? "Switch to ProHealth Daylight Mode" : "Switch to Night Care Mode"}
+              title={theme === "dark" ? "Switch to CarePulse Daylight Mode" : "Switch to Night Care Mode"}
             >
               <span>{theme === "dark" ? "☀️ Daylight" : "🌙 Night Care"}</span>
             </button>
@@ -59,17 +59,17 @@ export default function Header({
         </div>
       </div>
 
-      {/* ProHealth Main Navbar */}
+      {/* Main Navbar */}
       <div className="cs_main_header">
         <div className="cs_header_inner">
-          {/* ProHealth Brand Logo */}
-          <div className="cs_brand" onClick={() => setActiveTab("chat")} title="ProHealth AI Home">
+          {/* CarePulse AI Brand Logo */}
+          <div className="cs_brand" onClick={() => setActiveTab("chat")} title="CarePulse AI Home">
             <div className="cs_brand_logo_icon">
               <span>⚕️</span>
             </div>
             <div className="cs_brand_text">
-              <h2>Pro<span>Health</span></h2>
-              <p>Medical & Healthcare Center</p>
+              <h2>Care<span>Pulse</span> AI</h2>
+              <p>Smart & Compassionate Health Guide</p>
             </div>
           </div>
 

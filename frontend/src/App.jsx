@@ -17,11 +17,11 @@ export default function App() {
   const [initialChatQuery, setInitialChatQuery] = useState("");
 
   // Theme customization (ProHealth Daylight by default or Night Care)
-  const [theme, setTheme] = useState(() => localStorage.getItem("prohealth_theme") || "light");
+  const [theme, setTheme] = useState(() => localStorage.getItem("carepulse_theme") || "light");
 
   useEffect(() => {
     document.documentElement.setAttribute("data-theme", theme);
-    localStorage.setItem("prohealth_theme", theme);
+    localStorage.setItem("carepulse_theme", theme);
   }, [theme]);
 
   useEffect(() => {
